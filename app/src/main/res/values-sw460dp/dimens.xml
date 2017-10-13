@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mm_height">240dp</dimen>
+    <dimen name="mm_small_width">240dp</dimen>
+    <dimen name="mm_margin">0dp</dimen>
+    <dimen name="search_bar_width">400dp</dimen>
+    <dimen name="mm_popup_height">340dp</dimen>
+
+</resources>

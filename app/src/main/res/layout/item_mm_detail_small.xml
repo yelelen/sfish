@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/im_item_mm_detail_small"
+        android:layout_width="@dimen/mm_small_width"
+        android:layout_height="@dimen/mm_small_height"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:layout_margin="@dimen/len_2"/>
+
+</FrameLayout>

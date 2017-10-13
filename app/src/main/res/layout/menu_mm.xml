@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:id="@+id/lay_container"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/len_48"
+    android:layout_marginEnd="@dimen/len_34">
+
+    <com.yelelen.sfish.view.SearchBar
+        android:id="@+id/searchbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="invisible"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+        app:sb_prompt="@string/mm_search_prompt"
+        app:sb_textSize="@dimen/font_6"/>
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        app:bgColor="@android:color/black"
+        app:imagePadding="@dimen/len_8"
+        app:imageSrc="@mipmap/mm_search"
+        app:radius="@dimen/len_20"
+        app:ringColor="@android:color/white"/>
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        app:bgColor="@android:color/black"
+        app:imagePadding="@dimen/len_8"
+        app:imageSrc="@mipmap/mm_label"
+        app:radius="@dimen/len_20"
+        app:ringColor="@android:color/white"/>
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_leg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        app:bgColor="@android:color/black"
+        app:imageSrc="@mipmap/mm_leg"
+        app:radius="@dimen/len_20"
+        app:imagePadding="@dimen/len_4"
+        app:ringColor="@android:color/white"/>
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        app:bgColor="@android:color/black"
+        app:imagePadding="@dimen/len_4"
+        app:imageSrc="@mipmap/mm_back"
+        app:radius="@dimen/len_20"
+        app:ringColor="@android:color/white"/>
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        app:bgColor="@android:color/black"
+        app:imagePadding="@dimen/len_6"
+        app:imageSrc="@mipmap/forward"
+        app:ringColor="@android:color/white"/>
+
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_voice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        app:bgColor="@android:color/black"
+        app:imagePadding="@dimen/len_6"
+        app:imageSrc="@mipmap/voice_small"
+        app:ringColor="@android:color/white"/>
+
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:bgColor="@android:color/black"
+        app:imagePadding="@dimen/len_6"
+        app:imageSrc="@mipmap/mm_home"
+        app:ringColor="@android:color/white"/>
+</FrameLayout>

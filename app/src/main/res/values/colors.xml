@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="colorPrimary">#d81e06</color>-->
+    <color name="colorPrimary">#1296db</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#ea8f0f</color>
+    <color name="Bottom_nav_unchecked">#989898</color>
+    <color name="colorLight">#ffffff</color>
+    <color name="colorDark">#000000</color>
+    <color name="colorAccentAlpha">#801572fc</color>
+    <color name="searchbarTextColor">#ea8f0f</color>
+
+
+    <!--字体颜色-->
+    <color name="textPrimary">#4e5864</color>
+    <color name="textSecond">#8d9ca9</color>
+    <color name="textAccent">@color/colorAccent</color>
+    <color name="textLight">@color/colorLight</color>
+    <color name="textDark">#202020</color>
+    <color name="bg_color">#77efefef</color>
+</resources>

@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">sfish</string>
+    <string name="permission_explain">小鱼需要一些权限才能更好地为您服务^-^</string>
+    <string name="no_permission">小鱼希望下次能获得你的权限</string>
+    <string name="nav_yun_xuan">鱼选</string>
+    <string name="nav_mm">鱼美人</string>
+    <string name="nav_laught">鱼乐</string>
+    <string name="nav_news">鱼讯</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="error_no_response">服务器无响应，请检查网络是否连接正常</string>
+    <string name="error_no_net">无网络连接</string>
+    <string name="error_no_cache_image">没有缓存数据</string>
+    <string name="title_activity_image">ImageActivity</string>
+    <string name="title_assist_permissions">授予权限</string>
+    <string name="label_permission_network">网络访问</string>
+    <string name="label_permission_network_desc">访问网络资源</string>
+    <string name="label_permission_read">读取文件</string>
+    <string name="label_permission_read_desc">用于加载缓存的文件</string>
+    <string name="label_permission_write">写外部文件</string>
+    <string name="label_permission_write_desc">用于缓存文件</string>
+    <string name="label_permission">授予权限</string>
+    <string name="label_permission_ok">授权成功</string>
+    <string name="_26">label_image_num</string>
+    <string name="error_no_cache_dir">图片缓存目录不存在</string>
+    <string name="network_error">网络异常</string>
+    <string name="network_unavailable">没有连接到有效的网络</string>
+    <string name="wifi_go_setting">去设置</string>
+    <string name="wifi_known">知道了</string>
+    <string name="wifi_title">wifi设置</string>
+    <string name="wifi_message">当前没有连接到网络，请确保网络畅通</string>
+    <string name="label_permission_network_status">访问网络状态</string>
+    <string name="label_permission_network_status_des">获得WIFI，移动网络状态，节省你的流量</string>
+    <string name="label_permission_location">地理位置</string>
+    <string name="label_permission_location_desc">获得你的地理位置</string>
+    <string name="label_permission_record">记录你的声音</string>
+    <string name="label_permission_record_desc">为你提供语音搜索功能</string>
+    <string name="network_mobile">目前处于移动网络，请注意流量哦</string>
+    <string name="label_mm_refresh_no_more">今天美女就这么多了</string>
+    <string name="label_mm_load_no_more">就这么多美女啦</string>
+    <string name="label_mm_save_image_failed">保存图片失败</string>
+    <string name="label_mm_label">美女分类</string>
+    <string name="label_close">关闭</string>
+    <string name="mm_search_prompt">搜你所想...</string>
+    <string name="label_voice_prompt">说出你想要的...</string>
+    <string name="label_voice_again">点击按钮，说出你想要的...</string>
+    <string name="label_voice_poem">世界上最遥远的距离
+不是生与死的距离
+而是我站在你面前，你却不知道我爱你
+世界上最遥远的距离
+不是我站在你面前，你不知道我爱你
+而是爱你爱到痴迷，却不能说我爱你
+世界上最遥远的距离
+不是我不能说我爱你
+而是想你痛彻心脾，却只能深埋心底
+世界上最遥远的距离
+不是我不能说我想你
+而是彼此相爱，却不能在一起
+世界上最遥远的距离
+不是彼此相爱，却不能在一起
+而是明明无法抵挡这一股气息，却还得装做毫不在意
+世界上最遥远的距离
+不是明明无法抵挡这一股气息，却还装做毫不在意
+而是你用一颗冷漠的心，在你和爱你的人之间，掘了一条无法跨越的沟渠
+世界上最遥远的距离
+不是树与树的距离
+而是同根生长的树枝，却无法在风中相依
+世界上最遥远的距离
+不是树枝无法相依
+而是相互瞭望的星星，却没有交汇的轨迹
+世界上最遥远的距离
+不是星星之间的轨迹
+而是纵然轨迹交汇，却在瞬间无处寻觅
+世界上最遥远的距离
+不是瞬间便无处寻觅
+而是尚未相遇，便注定无法相聚
+世界上最遥远的距离
+是飞鸟与鱼的距离
+一个在天，一个却深潜海底.</string>
+    <string name="label_voice_recording">正在采集您的声音...</string>
+</resources>

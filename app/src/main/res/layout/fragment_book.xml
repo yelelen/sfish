@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:background="@color/bg_color">
+    <Button
+        android:id="@+id/btn_expand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="expand"/>
+
+    <Button
+        android:id="@+id/btn_collapse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:text="collapse"/>
+    <com.yelelen.sfish.view.SearchBar
+        android:id="@+id/searchbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:sb_prompt="hello world!"
+        android:layout_marginTop="@dimen/len_52"/>
+
+    <com.yelelen.sfish.view.CircleButton
+        android:id="@+id/btn_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/len_32"
+        app:bgColor="@android:color/black"
+        app:imagePadding="@dimen/len_6"
+        app:imageSrc="@mipmap/book_small"
+        app:ringColor="@android:color/white"/>
+
+</FrameLayout>

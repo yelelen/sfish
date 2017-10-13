@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleButton">
+        <attr name="radius" format="dimension"/>
+        <attr name="imagePadding" format="dimension"/>
+        <attr name="imageSrc" format="reference" />
+        <attr name="bgColor" format="color"/>
+        <attr name="ringColor" format="color"/>
+        <attr name="ringWidth" format="dimension"/>
+        <attr name="bgAlpha" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="SearchBar">
+        <attr name="sb_radius" format="dimension"/>
+        <attr name="sb_bgColor" format="color"/>
+        <attr name="sb_promptColor" format="color"/>
+        <attr name="sb_textColor" format="color"/>
+        <attr name="sb_textSize" format="dimension"/>
+        <attr name="sb_bgAlpha" format="integer"/>
+        <attr name="sb_prompt" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="VoiceButtton">
+        <attr name="vb_imagePadding" format="dimension"/>
+        <attr name="vb_bgColor" format="color"/>
+        <attr name="vb_ringColor" format="color"/>
+        <attr name="vb_ringWidth" format="dimension"/>
+        <attr name="vb_bgAlpha" format="integer"/>
+    </declare-styleable>
+
+</resources>
