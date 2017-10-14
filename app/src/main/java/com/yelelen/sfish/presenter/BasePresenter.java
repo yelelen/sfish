@@ -94,6 +94,7 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     public void loadLabelData(final int count, final String label) {
         setDataType(LABEL);
         mCurLabel = label;
+        mCount = count;
         if (!mLastLabel.equals(label)) {
             mLabelStartIndex = 0;
             mLastLabel = label;

@@ -47,12 +47,14 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
         private RadioGroup mRadioGroup;
         private TextView mCategory;
         private ImageView mRefresh;
+        private ImageView mEmpty;
         private RecyclerView mRecyclerView;
         private SoundAlbumAdapter mSoundAlbumAdapter;
         private Context mContext;
         private SoundItemPresenter mPresenter;
         private int mCount = 6;
         private String mCurrLabel = "";
+        private String mLastLabel = mCurrLabel;
 
         public SoundViewHolder(View itemView) {
             super(itemView);
@@ -64,6 +66,7 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
             mRadioGroup = itemView.findViewById(R.id.rg_category);
 
             mRefresh = itemView.findViewById(R.id.im_sound_refresh);
+            mEmpty = itemView.findViewById(R.id.im_sound_empty);
             mRecyclerView = itemView.findViewById(R.id.sound_item_recycler);
             mRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 3));
             mSoundAlbumAdapter = new SoundAlbumAdapter(this);
@@ -75,7 +78,7 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     setRadioButttonTextColor(checkedId);
-                    mCurrLabel = getCheckedButtonText(checkedId);
+                    setCurrentLabel(getCheckedButtonText(checkedId));
                     mPresenter.setLabelStartIndex(0);
                     mPresenter.loadLabelData(mCount, mCurrLabel);
                 }
@@ -92,18 +95,17 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
             else
                 mCategory1.setText(data.getCategory1());
 
-            if (TextUtils.isEmpty(data.getCategory1()))
+            if (TextUtils.isEmpty(data.getCategory2()))
                 mCategory2.setVisibility(View.GONE);
             else
                 mCategory2.setText(data.getCategory2());
 
-            if (TextUtils.isEmpty(data.getCategory1()))
+            if (TextUtils.isEmpty(data.getCategory2()))
                 mCategory3.setVisibility(View.GONE);
             else
                 mCategory3.setText(data.getCategory3());
 
-            mCurrLabel = data.getCategory();
-
+            setCurrentLabel(data.getCategory());
             mPresenter.loadLabelData(mCount, data.getCategory());
         }
 
@@ -121,11 +123,12 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.im_sound_refresh:
-                     mPresenter.loadLabelData(mCount, mCurrLabel);
+                    setCurrentLabel(mCurrLabel);
+                    mPresenter.loadLabelData(mCount, mCurrLabel);
                     break;
                 case R.id.label_sound_category:
                     setRadioButttonTextColor(-100);
-                    mCurrLabel = mCategory.getText().toString();
+                    setCurrentLabel(mCategory.getText().toString());
                     mPresenter.setLabelStartIndex(0);
                     mPresenter.loadLabelData(mCount, mCurrLabel);
                     break;
@@ -141,12 +144,18 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
                     @Override
                     public void run() {
                         if (t != null && t.size() > 0) {
+                            mEmpty.setVisibility(View.GONE);
                             List<SoundAlbumItemModel> models = new ArrayList<>();
                             for (SoundItemModel soundItemModel : t) {
                                 SoundAlbumItemModel model = new SoundAlbumItemModel(soundItemModel);
                                 models.add(model);
                             }
                             mSoundAlbumAdapter.replace(models);
+                        } else {
+                            if (mLastLabel != mCurrLabel) {
+                                mSoundAlbumAdapter.replace(null);
+                                mEmpty.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
                 });
@@ -155,12 +164,17 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
 
         }
 
+        private void setCurrentLabel(String label) {
+            mLastLabel = mCurrLabel;
+            mCurrLabel = label;
+        }
+
         @Override
         public void onLoadFailed(String reason) {
             Utils.showToast(mContext, reason);
         }
 
-        private void  setRadioButttonTextColor(int id) {
+        private void setRadioButttonTextColor(int id) {
             int colorHight = mContext.getResources().getColor(R.color.colorPrimary);
             int colorGray = mContext.getResources().getColor(R.color.textSecond);
 
