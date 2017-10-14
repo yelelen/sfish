@@ -34,12 +34,10 @@ public class SoundAlbumAdapter extends RecyclerAdapter<SoundAlbumItemModel> {
         private ImageView mCover;
         private Context mContext;
         private TextView mTitle;
-        private TextView mPlayCount;
 
         public SoundAlbumViewHolder(View itemView) {
             super(itemView);
             mTitle = itemView.findViewById(R.id.label_sound_album_title);
-            mPlayCount = itemView.findViewById(R.id.label_sound_album_play_count);
             mCover = itemView.findViewById(R.id.im_sound_album_cover);
             mContext = mCover.getContext();
         }
@@ -48,13 +46,12 @@ public class SoundAlbumAdapter extends RecyclerAdapter<SoundAlbumItemModel> {
         protected void onBind(SoundAlbumItemModel data) {
             Glide.with(mContext)
                     .load(data.getCover())
-                    .placeholder(R.drawable.ic_mm_wait)
-                    .fitCenter()
+                    .placeholder(R.drawable.ic_sound_wait)
+                    .centerCrop()
                     .dontAnimate()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(mCover);
-            mPlayCount.setText(String.valueOf(data.getPlayCount()));
-            mTitle.setText(String.valueOf(data.getTitle()));
+            mTitle.setText(data.getTitle());
         }
     }
 }

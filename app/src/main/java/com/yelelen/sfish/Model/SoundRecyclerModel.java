@@ -17,6 +17,9 @@ public class SoundRecyclerModel {
         this.category3 = category3;
     }
 
+    public SoundRecyclerModel() {
+    }
+
     public String getCategory() {
         return category;
     }

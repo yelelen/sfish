@@ -1,47 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
-             android:layout_height="match_parent"
+             android:layout_height="@dimen/sound_album_height"
              xmlns:app="http://schemas.android.com/apk/res-auto">
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorAccent"
         app:cardCornerRadius="@dimen/len_4"
-        android:layout_margin="@dimen/len_4"
-        app:cardElevation="@dimen/len_4">
+        android:layout_margin="@dimen/sound_album_margin"
+        app:cardElevation="@dimen/len_2">
         <ImageView
             android:id="@+id/im_sound_album_cover"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
+            android:layout_height="@dimen/sound_album_image_height"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_logo"
-            android:layout_marginBottom="@dimen/len_30"/>
-        <ImageView
-            android:layout_width="@dimen/len_20"
-            android:layout_height="@dimen/len_20"
-            android:src="@drawable/ic_sound_album_play"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="@dimen/len_34"
-            android:layout_marginLeft="@dimen/len_10"/>
-        <TextView
-            android:id="@+id/label_sound_album_play_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="765万"
-            android:textSize="@dimen/font_14"
-            android:textColor="@android:color/white"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="@dimen/len_34"
-            android:layout_marginLeft="@dimen/len_44"/>
+            android:layout_marginBottom="@dimen/len_28"/>
         <TextView
             android:id="@+id/label_sound_album_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
             android:text="中国古代历史与人物之秦始皇"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="@dimen/len_4"/>
+            android:textSize="@dimen/font_12"
+            android:gravity="center"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="@dimen/len_2"/>
     </android.support.v7.widget.CardView>
 
 

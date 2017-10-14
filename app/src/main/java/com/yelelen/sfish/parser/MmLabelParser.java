@@ -27,9 +27,9 @@ public class MmLabelParser extends JsonParserImpl<MmLabelModel> {
                 MmLabelModel model = new MmLabelModel();
                 JSONObject item = hits.getJSONObject(i);
                 JSONObject source = item.getJSONObject("_source");
-                model.setOrder(source.getInt("order"));
-                model.setCover(source.getString("cover"));
-                model.setLabel(source.getString("label"));
+                model.setOrder(source.getInt("mml_order"));
+                model.setCover(source.getString("mml_cover"));
+                model.setLabel(source.getString("mml_label"));
                 models.add(model);
             }
             return models;

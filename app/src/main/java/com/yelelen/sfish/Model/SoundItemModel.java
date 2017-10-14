@@ -27,6 +27,8 @@ public class SoundItemModel implements Parcelable {
     private String lastUpdateTime;
     @Column(name = "play_count")
     private String playCount;
+    @Column(name = "play_num")
+    private long playNum;
     @Column(name = "desc")
     private String desc;
     @Column(name = "sounds")
@@ -37,8 +39,8 @@ public class SoundItemModel implements Parcelable {
     public SoundItemModel() {
     }
 
-    public SoundItemModel(int order, int zhuboId, String cover, String title, String tag,
-                          String lastUpdateTime, String playCount, String desc, String sounds, String path) {
+    public SoundItemModel(int order, int zhuboId, long playNum, String cover, String title, String tag,
+                          String lastUpdateTime, String playCount, String desc, String sounds,String path) {
         this.order = order;
         this.zhuboId = zhuboId;
         this.cover = cover;
@@ -46,9 +48,18 @@ public class SoundItemModel implements Parcelable {
         this.tag = tag;
         this.lastUpdateTime = lastUpdateTime;
         this.playCount = playCount;
+        this.playNum = playNum;
         this.desc = desc;
         this.sounds = sounds;
         this.path = path;
+    }
+
+    public long getPlayNum() {
+        return playNum;
+    }
+
+    public void setPlayNum(long playNum) {
+        this.playNum = playNum;
     }
 
     public String getPath() {
@@ -140,6 +151,7 @@ public class SoundItemModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(order);
         dest.writeInt(zhuboId);
+        dest.writeLong(playNum);
         dest.writeString(cover);
         dest.writeString(title);
         dest.writeString(tag);
@@ -156,6 +168,7 @@ public class SoundItemModel implements Parcelable {
            return new SoundItemModel(
                    source.readInt(),
                    source.readInt(),
+                   source.readLong(),
                    source.readString(),
                    source.readString(),
                    source.readString(),

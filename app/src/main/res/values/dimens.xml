@@ -45,4 +45,11 @@
     <dimen name="len_50">50dp</dimen>
     <dimen name="len_36">36dp</dimen>
     <dimen name="len_35">35dp</dimen>
+    <dimen name="len_38">38dp</dimen>
+    <dimen name="font_10">10sp</dimen>
+    <dimen name="sound_album_height">180dp</dimen>
+    <dimen name="sound_album_image_height">140dp</dimen>
+    <dimen name="sound_item_height">412dp</dimen>
+    <dimen name="sound_album_margin">2dp</dimen>
+    <dimen name="len_18">18dp</dimen>
 </resources>

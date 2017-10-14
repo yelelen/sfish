@@ -12,7 +12,9 @@ import com.yelelen.sfish.runnable.MmLoaderImageRunnable;
 import com.yelelen.sfish.utils.Utils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yelelen on 17-9-5.
@@ -25,10 +27,17 @@ public class MmDetailPresenter {
     private boolean isFirstLoadCache = true;
     private boolean isFirstNetworkNone = true;
     private boolean isFirstNetwork = true;
+    private static Map<String, String> mHeader;
+
 
     public MmDetailPresenter(Context context) {
         mContext = context;
         mPoolHelper = ThreadPoolHelper.getInstance();
+        mHeader = new HashMap<>();
+        mHeader.put("Referer", "http://www.mmjpg.com/mm/489");
+        mHeader.put("User-Agent",
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)" +
+                        " Chrome/60.0.3112.101 Safari/537.36");
     }
 
     public void setListener(DownloadImage listener) {
@@ -47,7 +56,7 @@ public class MmDetailPresenter {
             }
             String fileName = Utils.getMD5(url);
             mPoolHelper.start(new MmLoaderImageRunnable(mContext, url, new File(savePath), fileName, mListener,
-                    App.mHeader));
+                    mHeader));
         } else {
             if(isFirstNetworkNone) {
                 ((MmDetailActivity) mContext).getHandler().sendEmptyMessage(Contant.MSG_NETWORK_UNAVAILABLE);

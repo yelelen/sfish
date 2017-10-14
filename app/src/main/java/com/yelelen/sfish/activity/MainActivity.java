@@ -12,6 +12,17 @@ import com.yelelen.sfish.adapter.MainPagerAdapter;
 public class MainActivity extends BaseActivity {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
+    public static MainActivity mInstance;
+
+    static {
+        mInstance = new MainActivity();
+    }
+
+    public static MainActivity getInstance() {
+        if (mInstance != null)
+            return mInstance;
+        return null;
+    }
 
     protected int getContentLayoutId() {
         return R.layout.activity_main;
@@ -32,10 +43,10 @@ public class MainActivity extends BaseActivity {
     protected void initData() {
         MainPagerAdapter pagerAdapter = new MainPagerAdapter();
         mViewPager.setAdapter(pagerAdapter);
-        mViewPager.setCurrentItem(4);
+        mViewPager.setCurrentItem(2);
 
         initTabs();
-        mTabLayout.getTabAt(4).select();
+        mTabLayout.getTabAt(2).select();
     }
 
     @Override

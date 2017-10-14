@@ -264,9 +264,9 @@ public class Utils {
             File file = new File(path);
             if (file.exists() && !file.isDirectory()) {
                 file.delete();
-                file.mkdir();
+                file.mkdirs();
             } else if (!file.exists())
-                file.mkdir();
+                file.mkdirs();
 
             return true;
         } catch (Exception e) {

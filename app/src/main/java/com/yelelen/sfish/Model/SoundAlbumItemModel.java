@@ -20,7 +20,7 @@ public class SoundAlbumItemModel {
     public SoundAlbumItemModel(SoundItemModel model) {
         this.order = model.getOrder();
         this.title = model.getTitle();
-        this.cover = model.getCover();
+        this.cover = model.getPath();
         this.playCount = model.getPlayCount();
     }
 

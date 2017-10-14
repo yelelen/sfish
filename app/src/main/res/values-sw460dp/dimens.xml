@@ -5,5 +5,9 @@
     <dimen name="mm_margin">0dp</dimen>
     <dimen name="search_bar_width">400dp</dimen>
     <dimen name="mm_popup_height">340dp</dimen>
+    <dimen name="sound_item_height">448dp</dimen>
+    <dimen name="sound_album_height">200dp</dimen>
+    <dimen name="sound_album_image_height">160dp</dimen>
+    <dimen name="sound_album_margin">0dp</dimen>
 
 </resources>

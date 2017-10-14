@@ -43,7 +43,7 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
     private MmLoaderImageRunnable mImageRunnable;
     private ElasticHelper<MmItemModel> mElasticHelper;
     private static final String MM_URL = Contant.ES_URL + "mm/mmjpg/_search";
-    public static Map<String, String> mHeader;
+    private static Map<String, String> mHeader;
     private static int mLabelIndex = 0;
     private static String mLastLabel = "";
 
@@ -83,8 +83,8 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
 //        "suggest":{"mm-suggest":{"text":"性感","completion":{"field":"suggest", "size": 1000}}}}
     @Override
     protected String buildSuggestJson(int count, String label) {
-        return "{\"_source\": [\"tags\", \"title\", \"order\",\"seen_num\", \"fav_num\", \"total_num\", \"first_image_url\"]," +
-                "\"suggest\":{\"mm-suggest\":{\"text\":\"" + label + "\",\"completion\":{\"field\":\"suggest\", \"size\": "+ count + "}}}}";
+        return "{\"_source\": [\"mm_tags\", \"mm_title\", \"mm_order\",\"mm_seen_num\", \"mm_fav_num\", \"mm_total_num\", \"mm_first_image_url\"]," +
+                "\"suggest\":{\"mm-suggest\":{\"text\":\"" + label + "\",\"completion\":{\"field\":\"mm_suggest\", \"size\": "+ count + "}}}}";
     }
 
     private String buildLabelJson(String label, int count, int startIndex, String orderField, String order) {
@@ -93,7 +93,7 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
                 "        \"constant_score\" : {\n" +
                 "            \"filter\" : {\n" +
                 "                \"term\" : { \n" +
-                "                    \"tags\" : \""+ label +"\"\n" +
+                "                    \"mm_tags\" : \""+ label +"\"\n" +
                 "                }\n" +
                 "            }\n" +
                 "        }\n" +
@@ -104,32 +104,32 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
 
     @Override
     protected String buildLatestJson(int count, int index) {
-        return buildLatestJson(count, "order", index, "order", Contant.DESC);
+        return buildLatestJson(count, "mm_order", index, "mm_order", Contant.DESC);
     }
 
     @Override
     protected String buildMoreJson(int count, int index) {
-        return buildMoreJson(count, "order", index, "order", Contant.DESC);
+        return buildMoreJson(count, "mm_order", index, "mm_order", Contant.DESC);
     }
 
     protected String buildLabelJson(String label, int count, int startIndex) {
-        return buildLabelJson(label, count, startIndex,  "order", Contant.DESC);
+        return buildLabelJson(label, count, startIndex,  "mm_order", Contant.DESC);
     }
 
     public void fetchByFavNum(int count, int index) {
-        String json = buildMoreJson(count, "fav_num", index, "fav_num", DESC);
+        String json = buildMoreJson(count, "mm_fav_num", index, "mm_fav_num", DESC);
 
         mElasticHelper.fetchByPost(json);
     }
 
     public void fetchBySeenNum(int count, int index) {
-        String json = buildMoreJson(count, "seen_num", index, "seen_num", DESC);
+        String json = buildMoreJson(count, "mm_seen_num", index, "mm_seen_num", DESC);
 
         mElasticHelper.fetchByPost(json);
     }
 
     public void fetchByTotalNum(int count, int index) {
-        String json = buildMoreJson(count, "total_num", index, "total_num", DESC);
+        String json = buildMoreJson(count, "mm_total_num", index, "mm_total_num", DESC);
         mElasticHelper.fetchByPost(json);
     }
 
@@ -137,10 +137,13 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
     public void handleData(MmItemModel data) {
         File dir = new File(App.mMmImageBasePath + Utils.getMD5(data.getUrl()));
         String fileName = Utils.getMD5(data.getUrl());
-        mImageRunnable = new MmLoaderImageRunnable(App.mAppContext,
-                data.getUrl(), dir, fileName, this, mHeader);
-        ThreadPoolHelper.getInstance().start(mImageRunnable);
-        data.setPath(dir.getAbsolutePath() + File.separator + fileName);
+        String path = dir.getAbsolutePath() + File.separator + fileName;
+        if (!new File(path).exists()) {
+            mImageRunnable = new MmLoaderImageRunnable(App.mAppContext,
+                    data.getUrl(), dir, fileName, this, mHeader);
+            ThreadPoolHelper.getInstance().start(mImageRunnable);
+        }
+        data.setPath(path);
     }
 
     @Override

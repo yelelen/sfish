@@ -1,67 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <RelativeLayout
-        android:layout_width="match_parent"
+    android:layout_height="@dimen/sound_item_height"
+    android:layout_marginBottom="@dimen/len_6"
+    android:layout_marginTop="@dimen/len_4"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/label_sound_category"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/len_8"
+        android:layout_marginEnd="@dimen/len_20"
         android:layout_marginTop="@dimen/len_4"
-        android:layout_marginBottom="@dimen/len_4">
-        <TextView
-            android:id="@+id/label_sound_category"
+        android:text="有声书"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/font_20"
+        android:clickable="true"/>
+
+
+    <RadioGroup
+        android:id="@+id/rg_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/label_sound_category"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/len_10">
+
+        <RadioButton
+            android:id="@+id/rb_sound_category_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="有声书"
-            android:textSize="@dimen/font_18"
-            android:layout_marginRight="@dimen/len_16"
-            android:layout_marginLeft="@dimen/len_8"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"/>
-        <TextView
-            android:id="@+id/label_sound_category_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/len_4"
+            android:layout_marginEnd="@dimen/len_16"
+            android:layout_marginStart="@dimen/len_8"
+            android:layout_marginTop="@dimen/len_4"
+            android:background="@drawable/sel_sound_label"
+            android:button="@null"
+            android:padding="@dimen/len_4"
             android:text="悬疑"
-            android:textSize="@dimen/font_12"
-            android:padding="@dimen/len_4"
-            android:layout_marginLeft="@dimen/len_4"
-            android:layout_marginRight="@dimen/len_4"
-            android:layout_toRightOf="@id/label_sound_category"
-            android:background="@drawable/shape_sound_button"/>
-        <TextView
-            android:id="@+id/label_sound_category_2"
+            android:textColor="@color/textSecond"
+            android:textSize="@dimen/font_12"/>
+
+        <RadioButton
+            android:id="@+id/rb_sound_category_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/len_4"
+            android:layout_marginEnd="@dimen/len_16"
+            android:layout_marginStart="@dimen/len_4"
+            android:layout_marginTop="@dimen/len_4"
+            android:background="@drawable/sel_sound_label"
+            android:button="@null"
+            android:padding="@dimen/len_4"
             android:text="摸金校尉"
-            android:textSize="@dimen/font_12"
-            android:padding="@dimen/len_4"
-            android:layout_marginLeft="@dimen/len_4"
-            android:layout_marginRight="@dimen/len_4"
-            android:layout_toRightOf="@id/label_sound_category_1"
-            android:background="@drawable/shape_sound_button"/>
-        <TextView
-            android:id="@+id/label_sound_category_3"
+            android:textColor="@color/textSecond"
+            android:textSize="@dimen/font_12"/>
+
+        <RadioButton
+            android:id="@+id/rb_sound_category_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/len_4"
+            android:layout_marginEnd="@dimen/len_16"
+            android:layout_marginStart="@dimen/len_4"
+            android:layout_marginTop="@dimen/len_4"
+            android:background="@drawable/sel_sound_label"
+            android:button="@null"
+            android:padding="@dimen/len_4"
             android:text="历史"
-            android:padding="@dimen/len_4"
-            android:textSize="@dimen/font_12"
-            android:layout_marginLeft="@dimen/len_4"
-            android:layout_marginRight="@dimen/len_4"
-            android:layout_toRightOf="@id/label_sound_category_2"
-            android:background="@drawable/shape_sound_button"/>
-        <ImageView
-            android:id="@+id/im_sound_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_refresh"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="@dimen/len_20"/>
-    </RelativeLayout>
+            android:textColor="@color/textSecond"
+            android:textSize="@dimen/font_12"/>
+
+    </RadioGroup>
+
+    <ImageView
+        android:id="@+id/im_sound_refresh"
+        android:layout_width="@dimen/len_30"
+        android:layout_height="@dimen/len_30"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/len_10"
+        android:layout_marginEnd="@dimen/len_20"
+        android:src="@drawable/sel_sound_refresh"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/sound_item_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/len_30"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/len_12"
+        android:layout_below="@+id/im_sound_refresh"/>
 
-</FrameLayout>
+</RelativeLayout>

@@ -49,7 +49,7 @@ public class MmLoaderImageRunnable implements Runnable {
         Log.e("TAG", Thread.currentThread().getName());
 
         if (!mSaveDir.exists())
-            mSaveDir.mkdir();
+            mSaveDir.mkdirs();
 
         File file = new File(mSaveDir, mFileName);
         if (file.exists()) {

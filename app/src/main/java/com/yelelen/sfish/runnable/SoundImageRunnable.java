@@ -1,6 +1,7 @@
 package com.yelelen.sfish.runnable;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.yelelen.sfish.R;
 import com.yelelen.sfish.contract.DownloadImage;
@@ -49,9 +50,11 @@ public class SoundImageRunnable implements Runnable {
     public void run() {
         InputStream is = null;
         OutputStream os = null;
+        Log.e("TAG", Thread.currentThread().getName());
+
 
         if (!mSaveDir.exists())
-            mSaveDir.mkdir();
+            mSaveDir.mkdirs();
 
         File file = new File(mSaveDir, mFileName);
         if (file.exists()) {

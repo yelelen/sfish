@@ -38,10 +38,13 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
     public void handleData(SoundItemModel data) {
         File dir = new File(App.mSoundAlbumBasePath);
         String fileName = Utils.getMD5(data.getCover());
-        SoundImageRunnable runnable = new SoundImageRunnable(App.mAppContext,
-                data.getCover(), dir, fileName, this, mHeader);
-        ThreadPoolHelper.getInstance().start(runnable);
-        data.setPath(dir.getAbsolutePath() + File.separator + fileName);
+        String path = dir.getAbsolutePath() + File.separator + fileName;
+        if (!new File(path).exists()) {
+            SoundImageRunnable runnable = new SoundImageRunnable(App.mAppContext,
+                    data.getCover(), dir, fileName, this, mHeader);
+            ThreadPoolHelper.getInstance().start(runnable);
+        }
+        data.setPath(path);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
     @Override
     protected String buildSuggestJson(int count, String label) {
         return "{\"_source\": [\"tags\", \"title\", \"order\",\"seen_num\", \"fav_num\", \"total_num\", \"first_image_url\"]," +
-                "\"suggest\":{\"mm-suggest\":{\"text\":\"" + label + "\",\"completion\":{\"field\":\"suggest\", \"size\": "+ count + "}}}}";
+                "\"suggest\":{\"mm-suggest\":{\"text\":\"" + label + "\",\"completion\":{\"field\":\"suggest\", \"size\": " + count + "}}}}";
     }
 
     private String buildLabelJson(String label, int count, int startIndex, String orderField, String order) {
@@ -86,12 +89,12 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
                 "        \"constant_score\" : {\n" +
                 "            \"filter\" : {\n" +
                 "                \"term\" : { \n" +
-                "                    \"tags\" : \""+ label +"\"\n" +
+                "                    \"aa_tag\" : \"" + label + "\"\n" +
                 "                }\n" +
                 "            }\n" +
                 "        }\n" +
                 "\n" +
-                "    },\"from\": " + startIndex + ", \"size\":"+ count +", \"sort\":{\""+ orderField +"\": {\"order\":\""+ order + "\"}}\n" +
+                "    },\"from\": " + startIndex + ", \"size\":" + count + ", \"sort\":{\"" + orderField + "\": {\"order\":\"" + order + "\"}}\n" +
                 "}";
     }
 
@@ -102,10 +105,10 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
 
     @Override
     protected String buildMoreJson(int count, int index) {
-        return buildMoreJson(count, "order", index, "order", Contant.DESC);
+        return buildMoreJson(count, "aa_play_num", index, "aa_play_num", Contant.DESC);
     }
 
     protected String buildLabelJson(String label, int count, int startIndex) {
-        return buildLabelJson(label, count, startIndex,  "order", Contant.DESC);
+        return buildLabelJson(label, count, startIndex, "aa_play_num", Contant.DESC);
     }
 }
