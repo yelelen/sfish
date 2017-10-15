@@ -13,10 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SoundFragment extends BaseFragment {
+public class SoundFragment extends BaseFragment  {
     private RecyclerView mRecyclerView;
     private SoundAdapter mSoundAdapter;
     private List<SoundRecyclerModel> mModels;
+    private static SoundFragment mInstance;
+
+    static {
+        mInstance = new SoundFragment();
+    }
+
+    public static SoundFragment getInstance() {
+        return mInstance;
+    }
 
     @Override
     protected int getContentLayoutId() {

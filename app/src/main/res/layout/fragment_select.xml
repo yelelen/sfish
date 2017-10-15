@@ -17,8 +17,8 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_gravity="center"
-        app:cs_progressBarWidth="@dimen/len_4"
-        app:cs_secondProgressBarWidth="@dimen/len_2"/>
+        app:cs_progressBarWidth="@dimen/len_2"
+        app:cs_secondProgressBarWidth="@dimen/len_1"/>
 
     <com.yelelen.sfish.view.CircleButton
         android:id="@+id/btn_home"

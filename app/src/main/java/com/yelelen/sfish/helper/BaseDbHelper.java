@@ -105,6 +105,10 @@ public abstract class BaseDbHelper<T> {
         }).build().execute();
     }
 
+    public T getByOrder(int order) {
+        return null;
+    }
+
     public abstract List<T> getFromLocal(int count, boolean order);
     public abstract int getMaxOrder();
 }

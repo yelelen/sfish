@@ -142,6 +142,7 @@ public abstract class BaseActivity extends AppCompatActivity implements NetworkL
         }
     }
 
+
     protected void initView() {
         this.setTransitionsDefault();
     }

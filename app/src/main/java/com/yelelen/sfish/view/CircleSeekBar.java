@@ -57,10 +57,6 @@ public class CircleSeekBar extends View {
     private int mTotalDegree;
     private int mHalfWidth;
 
-    private int mIndicatorWidth;
-    private int mIndicatorHeight;
-    private int mIndicatorPressWidth;
-    private int mIndicatorPressHeight;
     private int maxPaddingWidth;
     private Bitmap mIndicator;
     private Bitmap mIndicatorPress;
@@ -84,18 +80,18 @@ public class CircleSeekBar extends View {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleSeekBar);
 
 //      设置的颜色不能带透明度，否则会卡死UI，可以设置进度条的透明度达到效果,原因暂时不明
-        mProgressColor = Color.CYAN;
+        mProgressColor = getResources().getColor(R.color.colorPrimary);
 //        mSecondProgressColor = Color.CYAN;
-        mSecondProgressColor = Color.RED;
+        mSecondProgressColor = mProgressColor;
         mBackgroundProgressColor = Color.parseColor("#e6e6e6");
 //        mBackgroundProgressColor = Color.parseColor("#7fe6e6e6");
 
         mProgressAlpha = 255;
-        mSecondProgressAlpha = 255;
-        mBackgroundProgressAlpha = 168;
+        mSecondProgressAlpha = 96;
+        mBackgroundProgressAlpha = 96;
 
-        mProgressWidth = Utils.dp2px(context, 2);
-        mSecondProgressWith = Utils.dp2px(context, 2);
+        mProgressWidth = Utils.dp2px(context, 1);
+        mSecondProgressWith = Utils.dp2px(context, 1);
         mBackgroundProgressWith = Utils.dp2px(context, 1);
 
         mIndicatorImage = R.mipmap.snail;
@@ -145,10 +141,6 @@ public class CircleSeekBar extends View {
 
         mIndicatorNormal = BitmapFactory.decodeResource(getResources(), mIndicatorImage);
         mIndicatorPress = BitmapFactory.decodeResource(getResources(), mIndicatorImagePress);
-        mIndicatorWidth = mIndicatorNormal.getWidth();
-        mIndicatorHeight = mIndicatorNormal.getHeight();
-        mIndicatorPressWidth = mIndicatorPress.getWidth();
-        mIndicatorPressHeight = mIndicatorPress.getHeight();
         mIndicator = mIndicatorNormal;
 
         mStartAngle = 135;
@@ -179,22 +171,24 @@ public class CircleSeekBar extends View {
 
         mWidth = Math.min(mWidth, mHeight);
         mHalfWidth = mWidth >> 1;
-        int maxIndicatorWidth = Math.max(mIndicator.getWidth(), mIndicatorPress.getWidth());
+        int maxIndicatorWidth = Math.max(mIndicatorNormal.getWidth(), mIndicatorPress.getWidth());
         int maxProgressWidth = Math.max(mProgressWidth, Math.max(mSecondProgressWith, mBackgroundProgressWith));
         maxPaddingWidth = Math.max(maxIndicatorWidth, maxProgressWidth);
         mRadius = mHalfWidth - maxPaddingWidth;
         mRectF.set(-mRadius, -mRadius, mRadius, mRadius);
+        mStartPointXY = getStartPointXY(mStartAngle);
         setMeasuredDimension(mWidth, mWidth);
     }
 
     private void getFinalWidthAndRadius() {
         mWidth = Math.min(mWidth, mHeight);
         mHalfWidth = mWidth >> 1;
-        int maxIndicatorWidth = Math.max(mIndicator.getWidth(), mIndicatorPress.getWidth());
+        int maxIndicatorWidth = Math.max(mIndicatorNormal.getWidth(), mIndicatorPress.getWidth());
         int maxProgressWidth = Math.max(mProgressWidth, Math.max(mSecondProgressWith, mBackgroundProgressWith));
         maxPaddingWidth = Math.max(maxIndicatorWidth, maxProgressWidth);
         mRadius = mHalfWidth - maxPaddingWidth;
         mRectF.set(-mRadius, -mRadius, mRadius, mRadius);
+        mStartPointXY = getStartPointXY(mStartAngle);
         invalidate();
     }
 
@@ -212,8 +206,8 @@ public class CircleSeekBar extends View {
         canvas.drawArc(mRectF, mStartAngle, mSecondProgressSweepAngle, false, mSecondProgressPaint);
         canvas.drawArc(mRectF, mStartAngle, mProgressSweepAngle, false, mProgressPaint);
         int[] xy = getIndicatorXY(mStartAngle, mProgressSweepAngle);
-        float x = xy[0] - (mIndicatorWidth >> 1);
-        float y = xy[1] - (mIndicatorHeight >> 1);
+        float x = xy[0] - (mIndicator.getWidth() >> 1);
+        float y = xy[1] - (mIndicator.getHeight() >> 1);
         canvas.drawBitmap(mIndicator, x, y, mIndicatorPaint);
     }
 
@@ -222,54 +216,50 @@ public class CircleSeekBar extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        if (event.getActionMasked() == MotionEvent.ACTION_MOVE ||
-                event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            if (isRightPos(x, y)) {
-                double radian = Math.atan2(y - mHalfWidth, x - mHalfWidth);
-            /*
-             * 由于atan2返回的值为[-pi,pi]
-             * 因此需要将弧度值转换一下，使得区间为[0,2*pi]
-             */
-                int degree;
-                if (radian < 0) {
-                    radian = radian + 2 * Math.PI;
-                    degree = (int) (Math.toDegrees(radian));
-                    mProgressSweepAngle = degree - mStartAngle;
-                } else if (radian >= 0 && radian <= Math.toRadians(mStartAngle)) {
-                    degree = (int) (Math.toDegrees(radian));
-                    mProgressSweepAngle = 360 - mStartAngle + degree;
-                } else {
-                    mProgressSweepAngle = (int) (Math.toDegrees(radian) - mStartAngle);
-                }
 
-                if (mProgressSweepAngle > mTotalDegree)
-                    mProgressSweepAngle = mTotalDegree;
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+                if (isRightPos(x, y)) {
+                    // 由于atan2返回的值为[-pi,pi],因此需要将弧度值转换一下，使得区间为[0,2*pi]
+                    int degree;
+                    double radian = Math.atan2(y - mHalfWidth, x - mHalfWidth);
+                    if (radian < 0) {
+                        radian = radian + 2 * Math.PI;
+                        degree = (int) (Math.toDegrees(radian));
+                        mProgressSweepAngle = degree - mStartAngle;
+                    } else if (radian >= 0 && radian <= Math.toRadians(mStartAngle)) {
+                        degree = (int) (Math.toDegrees(radian));
+                        mProgressSweepAngle = 360 - mStartAngle + degree;
+                    } else {
+                        mProgressSweepAngle = (int) (Math.toDegrees(radian) - mStartAngle);
+                    }
 
-                if (mListener != null)
-                    mListener.onSeek(mProgressSweepAngle * 1.0f / mTotalDegree * 100);
+                    if (mProgressSweepAngle > mTotalDegree)
+                        mProgressSweepAngle = 0;
 
-                if (isOnIndicator(x, y))
+                    if (mListener != null)
+                        mListener.onSeek((int) (mProgressSweepAngle * 1.0f/ mTotalDegree * 100));
                     mIndicator = mIndicatorPress;
-
-                invalidate();
-            }
-
-        }
-
-
-        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-            if (isOnIndicator(x, y)) {
+                    invalidate();
+                }
+                break;
+            case MotionEvent.ACTION_UP:
                 mIndicator = mIndicatorNormal;
                 invalidate();
-            }
+                break;
+
         }
 
         return true;
     }
 
     private boolean isRightPos(float x, float y) {
+        if (y > mStartPointXY.y) {
+            return false;
+        }
         float distance = Utils.twoPointDistance(new PointF(x, y), new PointF(mHalfWidth, mHalfWidth));
-        return (mRadius - maxPaddingWidth <= distance && distance <= mRadius + maxPaddingWidth);
+        return (mRadius - maxPaddingWidth / 2 <= distance && distance <= mRadius + maxPaddingWidth / 2);
     }
 
     private boolean isOnIndicator(float x, float y) {
@@ -292,18 +282,18 @@ public class CircleSeekBar extends View {
     }
 
     public interface OnSeekListener {
-        void onSeek(float progress);
+        void onSeek(int progress);
     }
 
     private PointF getStartPointXY(float startAngle) {
         int[] f = getIndicatorXY(0, mStartAngle);
-        PointF pointF = new PointF(f[0] + mRadius, f[1] + mRadius);
+        PointF pointF = new PointF(f[0] + mHalfWidth, f[1] + mHalfWidth);
         return pointF;
     }
 
     private int[] getIndicatorXY(float startAngle, float progressSweepAngle) {
         float totalAngle = startAngle + progressSweepAngle;
-        int x = 0, y = 0;
+        int x, y;
         float degree;
         if (totalAngle >= 90 && totalAngle <= 180) {
             degree = 180 - totalAngle;
@@ -423,6 +413,7 @@ public class CircleSeekBar extends View {
     public void setIndicatorImage(int indicatorImage) {
         mIndicatorImage = indicatorImage;
         mIndicatorNormal = BitmapFactory.decodeResource(getResources(), mIndicatorImage);
+        getFinalWidthAndRadius();
     }
 
     public int getIndicatorImagePress() {
@@ -432,6 +423,7 @@ public class CircleSeekBar extends View {
     public void setIndicatorImagePress(int indicatorImagePress) {
         mIndicatorImagePress = indicatorImagePress;
         mIndicatorPress = BitmapFactory.decodeResource(getResources(), mIndicatorImagePress);
+        getFinalWidthAndRadius();
     }
 
     public int getIndicatorAlpha() {

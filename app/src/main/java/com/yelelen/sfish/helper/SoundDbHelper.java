@@ -35,6 +35,13 @@ public class SoundDbHelper extends BaseDbHelper<SoundItemModel> {
         return models;
     }
 
+    public SoundItemModel getByOrder(int order) {
+        return SQLite.select()
+                .from(SoundItemModel.class)
+                .where(SoundItemModel_Table._id.eq(order))
+                .querySingle();
+    }
+
 
     public int getMaxOrder() {
         SoundItemModel model = SQLite.select()

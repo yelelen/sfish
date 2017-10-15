@@ -24,8 +24,8 @@ public class SelectFragment extends BaseFragment {
         mTextView = root.findViewById(R.id.label_select_text);
         mSeekBar.setListener(new CircleSeekBar.OnSeekListener() {
             @Override
-            public void onSeek(float progress) {
-                mTextView.setText(Math.round(progress) + " %");
+            public void onSeek(int progress) {
+                mTextView.setText(progress + " %");
             }
         });
     }

@@ -46,6 +46,10 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         registerDbObserver();
     }
 
+    public BaseDbHelper<T> getDbHelper() {
+        return mDbHelper;
+    }
+
     public void registerDbObserver() {
         mDbHelper.registerObserver(getModelClass(), this);
     }

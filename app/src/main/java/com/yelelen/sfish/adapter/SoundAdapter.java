@@ -1,6 +1,7 @@
 package com.yelelen.sfish.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -15,6 +16,7 @@ import com.yelelen.sfish.Model.SoundItemModel;
 import com.yelelen.sfish.Model.SoundRecyclerModel;
 import com.yelelen.sfish.R;
 import com.yelelen.sfish.activity.MainActivity;
+import com.yelelen.sfish.activity.SoundPlayActivity;
 import com.yelelen.sfish.contract.LoadContent;
 import com.yelelen.sfish.presenter.SoundItemPresenter;
 import com.yelelen.sfish.utils.Utils;
@@ -111,7 +113,10 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
 
         @Override
         public void onItemClick(BaseViewHolder holder, SoundAlbumItemModel data) {
-
+            Intent intent = new Intent(mContext, SoundPlayActivity.class);
+            intent.putExtra("SoundAlbum", data.getOrder());
+            intent.putExtra("SoundAlbumCover", data.getCover());
+            mContext.startActivity(intent);
         }
 
         @Override
