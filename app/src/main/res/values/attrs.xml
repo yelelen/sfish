@@ -28,4 +28,21 @@
         <attr name="vb_bgAlpha" format="integer"/>
     </declare-styleable>
 
+    <declare-styleable name="CircleSeekBar">
+        <attr name="cs_progressColor" format="color|reference"/>
+        <attr name="cs_secondProgressColor" format="color|reference"/>
+        <attr name="cs_backgroundProgressColor" format="color|reference"/>
+        <attr name="cs_progressAlpha" format="integer"/>
+        <attr name="cs_secondProgressAlpha" format="integer"/>
+        <attr name="cs_backgroundProgressAlpha" format="integer"/>
+        <attr name="cs_progressBarWidth" format="dimension"/>
+        <attr name="cs_secondProgressBarWidth" format="dimension"/>
+        <attr name="cs_backgroundProgressBarWidth" format="dimension"/>
+        <attr name="cs_indicatorImageSrc" format="reference"/>
+        <attr name="cs_indicatorImagePressSrc" format="reference"/>
+        <attr name="cs_indicatorAlpha" format="integer" />
+        <attr name="cs_totalDegree" format="integer" />
+        <attr name="cs_startAngle" format="integer" />
+    </declare-styleable>
+
 </resources>

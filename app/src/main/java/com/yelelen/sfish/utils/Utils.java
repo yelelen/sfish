@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Environment;
@@ -29,6 +30,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static java.lang.Math.sqrt;
 
 /**
  * Created by yelelen on 17-9-4.
@@ -306,6 +309,57 @@ public class Utils {
                 .setNegativeButton(R.string.wifi_known, null)
                 .create();
         wifiDialog.show();
+    }
+
+    public static float twoPointDistance(PointF point1, PointF point2) {
+        float x1 = point1.x;
+        float y1 = point1.y;
+        float x2 = point2.x;
+        float y2 = point2.y;
+        float x = Math.abs(x1 - x2);
+        float y = Math.abs(y1 - y2);
+
+        if (x1 == x2)
+            return y;
+        if (y1 == y2)
+            return x;
+
+        return (float) sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
+    // 已知三个点坐标，求得夹角ABC, AB 和 BC 组成的夹角， 最大为Math.PI, 其补角为360减去返回的角度
+    public static float threePointAngle(PointF a, PointF center, PointF c) {
+//        float x1 = a.x - b.x;
+//        float y1 = a.y - b.y;
+//        float x2 = c.x - b.x;
+//        float y2 = c.y - b.y;
+//
+//        float x = x1 * x2 + y1 * y2;
+//        float y = x1 * y2 - x2 * y1;
+//
+//        float angle = (float) Math.toDegrees(Math.acos(x/Math.sqrt(x*x + y*y)));
+//        if (c.x < b.x)
+//            angle = 360 - angle;
+//        return angle;
+
+        float dx1, dx2, dy1, dy2;
+        float angle;
+
+        dx1 = a.x - center.x;
+        dy1 = a.y - center.y;
+
+        dx2 = c.x - center.x;
+
+        dy2 = c.y - center.y;
+
+        float result = (float)Math.sqrt(dx1 * dx1 + dy1 * dy1) * (float)Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+        if (result == 0) return -1;
+
+        angle = (float)Math.acos((dx1 * dx2 + dy1 * dy2) / result);
+        angle = (float) Math.toDegrees(angle);
+
+        return angle;
     }
 }
 

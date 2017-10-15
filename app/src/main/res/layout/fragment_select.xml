@@ -6,10 +6,19 @@
              android:background="@color/bg_color">
 
     <TextView
+        android:id="@+id/label_select_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="select"/>
+
+    <com.yelelen.sfish.view.CircleSeekBar
+        android:id="@+id/circleseekbar"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        app:cs_progressBarWidth="@dimen/len_4"
+        app:cs_secondProgressBarWidth="@dimen/len_2"/>
 
     <com.yelelen.sfish.view.CircleButton
         android:id="@+id/btn_home"

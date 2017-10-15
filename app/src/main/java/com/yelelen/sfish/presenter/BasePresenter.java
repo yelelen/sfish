@@ -11,6 +11,7 @@ import com.yelelen.sfish.contract.NetDataListener;
 import com.yelelen.sfish.helper.BaseDbHelper;
 import com.yelelen.sfish.helper.Contant;
 import com.yelelen.sfish.helper.ElasticHelper;
+import com.yelelen.sfish.helper.ThreadPoolHelper;
 import com.yelelen.sfish.parser.JsonParser;
 
 import java.util.ArrayList;
@@ -56,7 +57,12 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     public void loadData(final int count) {
         setDataType(REFRESH);
         mCount = count;
-        loadMoreFromNet(count, mDbHelper.LAST_INDEX);
+        ThreadPoolHelper.getInstance().start(new Runnable() {
+            @Override
+            public void run() {
+                loadMoreFromNet(count, mDbHelper.LAST_INDEX);
+            }
+        });
     }
 
     private void setDataType(int type) {
@@ -88,7 +94,12 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
 
     public void loadLatestData(final int count) {
         setDataType(REFRESH);
-        loadLatestFromNet(count, mDbHelper.getMaxOrder());
+        ThreadPoolHelper.getInstance().start(new Runnable() {
+            @Override
+            public void run() {
+                loadLatestFromNet(count, mDbHelper.getMaxOrder());
+            }
+        });
     }
 
     public void loadLabelData(final int count, final String label) {
@@ -103,7 +114,12 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         if (isLabelDataEnd) {
             mListener.onLoadDone(null);
         } else {
-            fetchByLabel(label, count, mLabelStartIndex);
+            ThreadPoolHelper.getInstance().start(new Runnable() {
+                @Override
+                public void run() {
+                    fetchByLabel(label, count, mLabelStartIndex);
+                }
+            });
         }
 
     }
@@ -111,7 +127,12 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     public void loadSuggestData(final int count, final String s) {
         setDataType(SUGGEST);
         if (!TextUtils.isEmpty(s) && count > 0) {
-            fetchBySuggest(count, s);
+            ThreadPoolHelper.getInstance().start(new Runnable() {
+                @Override
+                public void run() {
+                    fetchBySuggest(count, s);
+                }
+            });
         }
     }
 
