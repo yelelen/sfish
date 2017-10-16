@@ -36,6 +36,27 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
 
     @Override
     public void handleData(SoundItemModel data) {
+        String cover = data.getCover();
+        boolean isJpg = cover.contains(".jpg");
+        boolean isJPG = cover.contains(".JPG");
+        boolean isPng = cover.contains(".png");
+        boolean isPNG = cover.contains(".PNG");
+        boolean endJpg = cover.endsWith(".jpg");
+        boolean endJPG = cover.endsWith(".JPG");
+        boolean endPng = cover.endsWith(".png");
+        boolean endPNG = cover.endsWith(".PNG");
+
+        if (!endJpg && !endJPG && !endPng && !endPNG) {
+            if (isJpg)
+                cover = handleCoverUrl(cover, ".jpg");
+            if (isJPG)
+                cover = handleCoverUrl(cover, ".JPG");
+            if (isPng)
+                cover = handleCoverUrl(cover, ".png");
+            if (isPNG)
+                cover = handleCoverUrl(cover, ".PNG");
+        }
+        data.setCover(cover);
         File dir = new File(App.mSoundAlbumBasePath);
         String fileName = Utils.getMD5(data.getCover());
         String path = dir.getAbsolutePath() + File.separator + fileName;
@@ -45,6 +66,11 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
             ThreadPoolHelper.getInstance().start(runnable);
         }
         data.setPath(path);
+    }
+
+    private String handleCoverUrl(String url, String type) {
+        String[] covers = url.split(type);
+        return covers[0] + type;
     }
 
     @Override

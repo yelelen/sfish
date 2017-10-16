@@ -44,4 +44,5 @@ dependencies {
     implementation "com.github.Raizlabs.DBFlow:dbflow:$rootProject.ext.dbflowVersion"
     implementation "com.trycatch.android:mysnackbar:$rootProject.ext.mySnackbarVersion"
     implementation files('libs/Msc.jar')
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }

@@ -32,6 +32,7 @@
         <attr name="cs_progressColor" format="color|reference"/>
         <attr name="cs_secondProgressColor" format="color|reference"/>
         <attr name="cs_backgroundProgressColor" format="color|reference"/>
+        <attr name="cs_durationColor" format="color|reference"/>
         <attr name="cs_progressAlpha" format="integer"/>
         <attr name="cs_secondProgressAlpha" format="integer"/>
         <attr name="cs_backgroundProgressAlpha" format="integer"/>
@@ -41,8 +42,17 @@
         <attr name="cs_indicatorImageSrc" format="reference"/>
         <attr name="cs_indicatorImagePressSrc" format="reference"/>
         <attr name="cs_indicatorAlpha" format="integer" />
-        <attr name="cs_totalDegree" format="integer" />
-        <attr name="cs_startAngle" format="integer" />
+        <attr name="cs_totalDegree" format="float" />
+        <attr name="cs_totalDuration" format="integer" />
+        <attr name="cs_startAngle" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="MusicBar">
+        <attr name="mb_barColor" format="color|reference"/>
+        <attr name="mb_barCount" format="integer"/>
+        <attr name="mb_barDistance" format="dimension"/>
+        <attr name="mb_barWidth" format="dimension"/>
+        <attr name="mb_refresh_duration" format="integer"/>
     </declare-styleable>
 
 </resources>

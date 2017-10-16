@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -16,6 +18,7 @@ import android.view.View;
 
 import com.yelelen.sfish.R;
 import com.yelelen.sfish.utils.Utils;
+
 
 /**
  * Created by yelelen on 17-10-15.
@@ -27,6 +30,7 @@ public class CircleSeekBar extends View {
     private int mProgressColor;
     private int mSecondProgressColor;
     private int mBackgroundProgressColor;
+    private int mTextDurationColor;
 
     private int mProgressAlpha;
     private int mSecondProgressAlpha;
@@ -39,29 +43,46 @@ public class CircleSeekBar extends View {
     private int mIndicatorImage;
     private int mIndicatorImagePress;
     private int mIndicatorAlpha;
-    private int mTotalProgress;
 
     private Paint mProgressPaint;
     private Paint mSecondProgressPaint;
     private Paint mBackgroundProgressPaint;
     private Paint mIndicatorPaint;
+    private Paint mTextPaint;
 
     private int mWidth;
     private int mHeight;
     private RectF mRectF;
     // 以3点钟方向为0度
-    private int mStartAngle;
+    private float mStartAngle;
     private PointF mStartPointXY;
-    private int mProgressSweepAngle;
-    private int mSecondProgressSweepAngle;
-    private int mTotalDegree;
+    private float mProgressSweepAngle;
+    private float mSecondProgressSweepAngle;
+    private float mTotalDegree;
+    private int mTotalDuration;
     private int mHalfWidth;
 
     private int maxPaddingWidth;
     private Bitmap mIndicator;
     private Bitmap mIndicatorPress;
     private Bitmap mIndicatorNormal;
-    private OnSeekListener mListener;
+    private OnStateChangeListener mListener;
+
+    private boolean mIsStart = false;
+    private static final int MSG_START = 10;
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            if (msg.what == MSG_START) {
+                mProgressSweepAngle += mTotalDegree / mTotalDuration;
+                invalidate();
+                if (mIsStart)
+                    mHandler.sendEmptyMessageDelayed(MSG_START, 1000);
+            }
+            return true;
+        }
+    });
 
     public CircleSeekBar(Context context) {
         this(context, null);
@@ -85,6 +106,7 @@ public class CircleSeekBar extends View {
         mSecondProgressColor = mProgressColor;
         mBackgroundProgressColor = Color.parseColor("#e6e6e6");
 //        mBackgroundProgressColor = Color.parseColor("#7fe6e6e6");
+        mTextDurationColor = getResources().getColor(R.color.textSecond);
 
         mProgressAlpha = 255;
         mSecondProgressAlpha = 96;
@@ -97,8 +119,9 @@ public class CircleSeekBar extends View {
         mIndicatorImage = R.mipmap.snail;
         mIndicatorImagePress = R.mipmap.snail_press;
         mIndicatorAlpha = 255;
-        mTotalProgress = 136;
+        mTotalDuration = 120;
 
+        mTextDurationColor = a.getColor(R.styleable.CircleSeekBar_cs_durationColor, mTextDurationColor);
         mProgressColor = a.getColor(R.styleable.CircleSeekBar_cs_progressColor, mProgressColor);
         mSecondProgressColor = a.getColor(R.styleable.CircleSeekBar_cs_secondProgressColor, mSecondProgressColor);
         mBackgroundProgressColor = a.getColor(R.styleable.CircleSeekBar_cs_backgroundProgressColor, mBackgroundProgressColor);
@@ -116,8 +139,9 @@ public class CircleSeekBar extends View {
         mIndicatorImage = a.getInteger(R.styleable.CircleSeekBar_cs_indicatorImageSrc, mIndicatorImage);
         mIndicatorImagePress = a.getInteger(R.styleable.CircleSeekBar_cs_indicatorImagePressSrc, mIndicatorImagePress);
         mIndicatorAlpha = a.getInteger(R.styleable.CircleSeekBar_cs_indicatorAlpha, mIndicatorAlpha);
-        mTotalDegree = a.getInt(R.styleable.CircleSeekBar_cs_totalDegree, mTotalDegree);
-        mStartAngle = a.getInt(R.styleable.CircleSeekBar_cs_startAngle, mStartAngle);
+        mTotalDegree = a.getFloat(R.styleable.CircleSeekBar_cs_totalDegree, mTotalDegree);
+        mTotalDuration = a.getInt(R.styleable.CircleSeekBar_cs_totalDuration, mTotalDuration);
+        mStartAngle = a.getFloat(R.styleable.CircleSeekBar_cs_startAngle, mStartAngle);
 
         mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         mProgressPaint.setColor(mProgressColor);
@@ -137,6 +161,10 @@ public class CircleSeekBar extends View {
         mBackgroundProgressPaint.setStyle(Paint.Style.STROKE);
         mBackgroundProgressPaint.setStrokeWidth(mBackgroundProgressWith);
 
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+        mTextPaint.setColor(mTextDurationColor);
+        mTextPaint.setTextSize(Utils.sp2px(getContext(), 10));
+
         mIndicatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
 
         mIndicatorNormal = BitmapFactory.decodeResource(getResources(), mIndicatorImage);
@@ -144,8 +172,8 @@ public class CircleSeekBar extends View {
         mIndicator = mIndicatorNormal;
 
         mStartAngle = 135;
-        mProgressSweepAngle = 80;
-        mSecondProgressSweepAngle = 180;
+        mProgressSweepAngle = 0;
+        mSecondProgressSweepAngle = 0;
         mTotalDegree = 270;
 
         mWidth = Utils.dp2px(context, 200);
@@ -176,7 +204,7 @@ public class CircleSeekBar extends View {
         maxPaddingWidth = Math.max(maxIndicatorWidth, maxProgressWidth);
         mRadius = mHalfWidth - maxPaddingWidth;
         mRectF.set(-mRadius, -mRadius, mRadius, mRadius);
-        mStartPointXY = getStartPointXY(mStartAngle);
+        mStartPointXY = getPointXY(mStartAngle);
         setMeasuredDimension(mWidth, mWidth);
     }
 
@@ -188,7 +216,7 @@ public class CircleSeekBar extends View {
         maxPaddingWidth = Math.max(maxIndicatorWidth, maxProgressWidth);
         mRadius = mHalfWidth - maxPaddingWidth;
         mRectF.set(-mRadius, -mRadius, mRadius, mRadius);
-        mStartPointXY = getStartPointXY(mStartAngle);
+        mStartPointXY = getPointXY(mStartAngle);
         invalidate();
     }
 
@@ -198,8 +226,12 @@ public class CircleSeekBar extends View {
         super.onDraw(canvas);
         if (mSecondProgressSweepAngle > mTotalDegree)
             mSecondProgressSweepAngle = mTotalDegree;
-        if (mProgressSweepAngle > mTotalDegree)
+        if (mProgressSweepAngle > mTotalDegree) {
             mProgressSweepAngle = mTotalDegree;
+            mIsStart = false;
+            if (mListener != null)
+                mListener.onEnd();
+        }
 
         canvas.translate(mHalfWidth, mHalfWidth);
         canvas.drawArc(mRectF, mStartAngle, mTotalDegree, false, mBackgroundProgressPaint);
@@ -209,6 +241,21 @@ public class CircleSeekBar extends View {
         float x = xy[0] - (mIndicator.getWidth() >> 1);
         float y = xy[1] - (mIndicator.getHeight() >> 1);
         canvas.drawBitmap(mIndicator, x, y, mIndicatorPaint);
+
+        int progress = Math.round((mProgressSweepAngle / mTotalDegree) * mTotalDuration);
+        String start = getDurationText(progress);
+        String end = getDurationText(mTotalDuration);
+        float startX = (mStartPointXY.x - mTextPaint.measureText(start) / 2) - mHalfWidth;
+        float startY = mStartPointXY.y + Utils.dp2px(getContext(), 16) - mHalfWidth;
+        float endX = ( -startX - mTextPaint.measureText(end));
+        float endY = (mStartPointXY.y + Utils.dp2px(getContext(), 16)) - mHalfWidth;
+        canvas.drawText(start, startX, startY, mTextPaint);
+        canvas.drawText(end, endX, endY, mTextPaint);
+
+//        if (mIsStart) {
+//            mProgressSweepAngle += mTotalDegree / mTotalDuration;
+//            postInvalidateDelayed(1000);
+//        }
     }
 
 
@@ -239,14 +286,20 @@ public class CircleSeekBar extends View {
                         mProgressSweepAngle = 0;
 
                     if (mListener != null)
-                        mListener.onSeek((int) (mProgressSweepAngle * 1.0f/ mTotalDegree * 100));
+                        mListener.onSeek((int) (mProgressSweepAngle / mTotalDegree * 100));
                     mIndicator = mIndicatorPress;
-                    invalidate();
+
+                    if (!mIsStart) {
+                        mIsStart = true;
+                        mHandler.sendEmptyMessage(MSG_START);
+                        if (mListener != null) {
+                            mListener.onBegin();
+                        }
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 mIndicator = mIndicatorNormal;
-                invalidate();
                 break;
 
         }
@@ -273,19 +326,21 @@ public class CircleSeekBar extends View {
         return false;
     }
 
-    public OnSeekListener getListener() {
+    public OnStateChangeListener getListener() {
         return mListener;
     }
 
-    public void setListener(OnSeekListener listener) {
+    public void setListener(OnStateChangeListener listener) {
         mListener = listener;
     }
 
-    public interface OnSeekListener {
+    public interface OnStateChangeListener {
         void onSeek(int progress);
+        void onBegin();
+        void onEnd();
     }
 
-    private PointF getStartPointXY(float startAngle) {
+    private PointF getPointXY(float startAngle) {
         int[] f = getIndicatorXY(0, mStartAngle);
         PointF pointF = new PointF(f[0] + mHalfWidth, f[1] + mHalfWidth);
         return pointF;
@@ -317,6 +372,54 @@ public class CircleSeekBar extends View {
         xy[0] = x;
         xy[1] = y;
         return xy;
+    }
+
+    private String getDurationText(int second) {
+        int m = second / 60;
+        int s = second % 60;
+        String str = s < 10 ? ("0" + String.valueOf(s)) : String.valueOf(s);
+        if (second < 0) {
+            return "0:00";
+        } else if (second >= 0 && second < 60) {
+            return "0:" + str;
+        } else {
+            return String.valueOf(m) + ":" + str;
+        }
+
+
+    }
+
+    public boolean isStart() {
+        return mIsStart;
+    }
+
+    public void start() {
+        mIsStart = true;
+        mHandler.sendEmptyMessage(MSG_START);
+        if (mListener != null) {
+            mListener.onBegin();
+        }
+    }
+
+    public void stop() {
+        mIsStart = false;
+    }
+
+    public int getTextDurationColor() {
+        return mTextDurationColor;
+    }
+
+    public void setTextDurationColor(int textDurationColor) {
+        mTextDurationColor = textDurationColor;
+        mTextPaint.setColor(mTextDurationColor);
+    }
+
+    public int getTotalDuration() {
+        return mTotalDuration;
+    }
+
+    public void setTotalDuration(int totalDuration) {
+        mTotalDuration = totalDuration;
     }
 
     public int getProgressColor() {
@@ -406,6 +509,7 @@ public class CircleSeekBar extends View {
 
     }
 
+
     public int getIndicatorImage() {
         return mIndicatorImage;
     }
@@ -435,13 +539,6 @@ public class CircleSeekBar extends View {
         mIndicatorPaint.setAlpha(mIndicatorAlpha);
     }
 
-    public int getTotalProgress() {
-        return mTotalProgress;
-    }
-
-    public void setTotalProgress(int totalProgress) {
-        mTotalProgress = totalProgress;
-    }
 
     public void setWidth(int width) {
         mWidth = width;
@@ -462,7 +559,7 @@ public class CircleSeekBar extends View {
         mStartAngle = startAngle;
         if (mStartAngle >= 360)
             mStartAngle %= 360;
-        mStartPointXY = getStartPointXY(mStartAngle);
+        mStartPointXY = getPointXY(mStartAngle);
     }
 
     public float getProgressSweepAngle() {
@@ -482,7 +579,7 @@ public class CircleSeekBar extends View {
     public void setSecondProgressSweepAngle(int secondProgressSweepAngle) {
         mSecondProgressSweepAngle = secondProgressSweepAngle;
         if (mSecondProgressSweepAngle > mTotalDegree)
-            mSecondProgressSweepAngle = mTotalProgress;
+            mSecondProgressSweepAngle = mTotalDegree;
     }
 
     public float getTotalDegree() {
