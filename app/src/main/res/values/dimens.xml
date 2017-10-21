@@ -53,4 +53,6 @@
     <dimen name="sound_album_margin">2dp</dimen>
     <dimen name="len_18">18dp</dimen>
     <dimen name="font_8">8sp</dimen>
+    <dimen name="len_76">76dp</dimen>
+    <dimen name="len_88">88dp</dimen>
 </resources>

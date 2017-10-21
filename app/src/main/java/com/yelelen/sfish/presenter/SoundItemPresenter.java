@@ -82,7 +82,7 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
     protected JsonParser<SoundItemModel> getParser(int type) {
         if (type == Contant.PARSER_TYPE_SUGGEST) {
             return new SoundSuggestParser();
-        } else if (type == Contant.PARSER_TYPE_MORE) {
+        } else if (type == Contant.PARSER_TYPE_MORE || type == Contant.PARSER_TYPE_ONE) {
             return new SoundParser();
         }
         return null;
@@ -122,6 +122,11 @@ public class SoundItemPresenter extends BasePresenter<SoundItemModel> {
                 "\n" +
                 "    },\"from\": " + startIndex + ", \"size\":" + count + ", \"sort\":{\"" + orderField + "\": {\"order\":\"" + order + "\"}}\n" +
                 "}";
+    }
+
+    @Override
+    protected String buildOneJson(int id) {
+        return "{\"query\":{\"term\":{\"aa_order\":" + id + "}}}";
     }
 
     @Override

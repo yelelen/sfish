@@ -72,7 +72,7 @@ public class MmLabelFragment extends BottomSheetDialogFragment
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (mLastVisiableItem == mAdapter.getItemCount() - 1) {
-                        mPresenter.loadData(mCount);
+                        mPresenter.loadMoreData(mCount);
                     }
                 }
 
@@ -91,7 +91,7 @@ public class MmLabelFragment extends BottomSheetDialogFragment
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.loadData(mCount);
+        mPresenter.loadMoreData(mCount);
     }
 
     public static void show(FragmentManager fm) {
@@ -171,4 +171,5 @@ public class MmLabelFragment extends BottomSheetDialogFragment
             }
         });
     }
+
 }

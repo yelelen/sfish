@@ -2,16 +2,27 @@ package com.yelelen.sfish.presenter;
 
 import com.yelelen.sfish.Model.SoundTrackModel;
 import com.yelelen.sfish.contract.LoadContent;
-import com.yelelen.sfish.helper.BaseDbHelper;
+import com.yelelen.sfish.contract.SoundTrackListener;
+import com.yelelen.sfish.helper.Contant;
+import com.yelelen.sfish.helper.SoundTrackDbHelper;
 import com.yelelen.sfish.parser.JsonParser;
+import com.yelelen.sfish.parser.SoundTrackParser;
+
+import java.util.List;
 
 /**
  * Created by yelelen on 17-10-16.
  */
 
-public class SoundTrackPresenter extends BasePresenter<SoundTrackModel> {
-    public SoundTrackPresenter(String url, BaseDbHelper<SoundTrackModel> dbHelper, LoadContent<SoundTrackModel> listener) {
-        super(url, dbHelper, listener);
+public class SoundTrackPresenter extends BasePresenter<SoundTrackModel>
+implements LoadContent<SoundTrackModel> {
+    private static final String SOUND_TRACK_URL = Contant.ES_URL + "audio/sounds/_search";
+    private SoundTrackListener mListener;
+
+    public SoundTrackPresenter(SoundTrackListener listener) {
+        super(SOUND_TRACK_URL, SoundTrackDbHelper.getInstance());
+        setListener(this);
+        mListener = listener;
     }
 
     @Override
@@ -21,11 +32,27 @@ public class SoundTrackPresenter extends BasePresenter<SoundTrackModel> {
 
     @Override
     protected Class<SoundTrackModel> getModelClass() {
-        return null;
+        return SoundTrackModel.class;
     }
 
     @Override
     protected JsonParser<SoundTrackModel> getParser(int type) {
-        return null;
+        return new SoundTrackParser();
+    }
+
+    @Override
+    public void onLoadDone(List<SoundTrackModel> t) {
+        if (mListener != null)
+            mListener.onTrackBack(t);
+    }
+
+    @Override
+    public void onLoadFailed(String reason) {
+
+    }
+
+    @Override
+    protected String buildOneJson(int id) {
+        return "{\"query\":{\"term\":{\"as_order\":" + id + "}}}";
     }
 }

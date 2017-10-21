@@ -1,45 +1,234 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:layout_height="match_parent">
 
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".10"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".65"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".85"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".80"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".20"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".80"/>
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="16dp"/>
+
+
+    <ImageView
+        android:id="@+id/sound_play_order"
+        android:layout_width="@dimen/len_44"
+        android:layout_height="@dimen/len_44"
+        android:padding="@dimen/len_10"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline6"
+        app:srcCompat="@drawable/ic_sound_order"
+        android:clickable="true"/>
+
+    <ImageView
+        android:id="@+id/sound_play_time"
+        android:layout_width="@dimen/len_44"
+        android:layout_height="@dimen/len_44"
+        android:padding="@dimen/len_8"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toStartOf="@+id/sound_play_fav"
+        app:layout_constraintStart_toEndOf="@+id/sound_play_order"
+        app:layout_constraintTop_toTopOf="@+id/guideline6"
+        app:srcCompat="@drawable/sel_sound_time"
+        android:clickable="true"/>
+
+
+    <ImageView
+        android:id="@+id/sound_play_fav"
+        android:layout_width="@dimen/len_44"
+        android:layout_height="@dimen/len_44"
+        android:padding="@dimen/len_8"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintTop_toTopOf="@+id/guideline6"
+        app:srcCompat="@drawable/sel_sound_fav"
+        android:clickable="true"/>
+
+    <ImageView
+        android:id="@+id/sound_play_back_15"
+        android:layout_width="@dimen/len_44"
+        android:layout_height="@dimen/len_44"
+        android:padding="@dimen/len_8"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toStartOf="@+id/guideline11"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline10"
+        app:srcCompat="@drawable/sel_sound_back_15"
+        android:clickable="true"/>
+
+    <ImageView
+        android:id="@+id/sound_play_forward_15"
+        android:layout_width="@dimen/len_44"
+        android:layout_height="@dimen/len_44"
+        android:padding="@dimen/len_8"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="@+id/guideline10"
+        app:srcCompat="@drawable/sel_sound_forward_15"
+        android:clickable="true"/>
+
+    <ImageView
+        android:id="@+id/sound_play_previous"
+        android:layout_width="@dimen/len_44"
+        android:layout_height="@dimen/len_44"
+        android:padding="@dimen/len_8"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintStart_toStartOf="@+id/guideline11"
+        app:layout_constraintTop_toTopOf="@+id/guideline10"
+        app:layout_constraintVertical_bias="0.506"
+        app:srcCompat="@drawable/sel_sound_previous"
+        android:clickable="true"/>
+
+    <ImageView
+        android:id="@+id/sound_play_next"
+        android:layout_width="@dimen/len_44"
+        android:layout_height="@dimen/len_44"
+        android:padding="@dimen/len_8"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="@+id/guideline10"
+        app:srcCompat="@drawable/sel_sound_next"
+        android:clickable="true"/>
+
+    <ImageView
+        android:id="@+id/sound_play_progress_bar_completition"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toStartOf="@+id/sound_play_next"
+        app:layout_constraintStart_toEndOf="@+id/sound_play_previous"
+        app:layout_constraintTop_toTopOf="@+id/guideline10"
+        app:srcCompat="@drawable/shape_sound_play_outring"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/sound_play_progressBar"
+        style="@style/sound_play_progressbar"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toStartOf="@+id/sound_play_next"
+        app:layout_constraintStart_toEndOf="@+id/sound_play_previous"
+        app:layout_constraintTop_toTopOf="@+id/guideline10"/>
+
+    <ImageView
+        android:id="@+id/sound_play_play"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:padding="@dimen/len_4"
+        app:layout_constraintBottom_toBottomOf="@+id/sound_play_progressBar"
+        app:layout_constraintEnd_toEndOf="@+id/sound_play_progressBar"
+        app:layout_constraintStart_toStartOf="@+id/sound_play_progressBar"
+        app:layout_constraintTop_toTopOf="@+id/sound_play_progressBar"
+        app:srcCompat="@drawable/ic_sound_play"
+        android:clickable="true"/>
 
     <com.yelelen.sfish.view.CircleSeekBar
         android:id="@+id/sound_play_seekbar"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="60dp"/>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/len_16"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline5"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/im_sound_play_cover"
-        android:layout_width="230dp"
-        android:layout_height="230dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="94dp"
+        android:id="@+id/sound_play_cover"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/len_36"
+        android:layout_marginEnd="@dimen/len_36"
+        android:layout_marginBottom="@dimen/len_36"
         app:civ_border_color="@android:color/white"
-        app:civ_border_width="@dimen/len_2"/>
-    <!--<TextView-->
-        <!--android:id="@+id/sound_play_time_start"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="00:00"-->
-        <!--android:textColor="@color/textSecond"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Notification.Info"-->
-        <!--android:textSize="@dimen/font_10"-->
-        <!--android:layout_marginTop="308dp"-->
-        <!--android:layout_marginLeft="104dp"/>-->
-    <!--<TextView-->
-        <!--android:id="@+id/sound_play_time_end"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="05:12"-->
-        <!--android:textColor="@color/textSecond"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Notification.Info"-->
-        <!--android:textSize="@dimen/font_10"-->
-        <!--android:layout_marginTop="308dp"-->
-        <!--android:layout_marginLeft="280dp"/>-->
-</FrameLayout>
+        app:civ_border_width="@dimen/len_2"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline5"/>
+</android.support.constraint.ConstraintLayout>

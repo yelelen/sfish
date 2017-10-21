@@ -14,10 +14,20 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item></style>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:listDivider">@drawable/shape_sound_album_recyclerview_decoration</item>
+    </style>
 
     <style name="popup_window_anim">
         <item name="android:windowEnterAnimation">@anim/in</item>
         <item name="android:windowExitAnimation">@anim/out</item>
+    </style>
+
+    <style name="sound_play_progressbar">
+        <item name="android:indeterminateDrawable">@drawable/shape_sound_play_progressbar</item>
+        <item name="android:minWidth">72dip</item>
+        <item name="android:maxWidth">72dip</item>
+        <item name="android:minHeight">72dip</item>
+        <item name="android:maxHeight">72dip</item>
     </style>
 </resources>

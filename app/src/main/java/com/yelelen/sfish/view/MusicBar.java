@@ -42,9 +42,9 @@ public class MusicBar extends View {
     private void init(Context context, AttributeSet attrs) {
         mBarColor = getResources().getColor(R.color.colorPrimary);
         mBarDistance = Utils.dp2px(context, 2);
-        mBarWidth = Utils.dp2px(context, 4);
-        mBarCount = 6;
-        mWidth = Utils.dp2px(context, 30);
+        mBarWidth = Utils.dp2px(context, 2);
+        mBarCount = 4;
+        mWidth = Utils.dp2px(context, 14);
         mHeight = Utils.dp2px(context, 24);
         mRefreshDuration = 150;
 
@@ -81,7 +81,7 @@ public class MusicBar extends View {
     }
 
     private void computeFinalBarWidth() {
-        mBarWidth = (mWidth - (mBarDistance * (mBarCount - 1))) / mBarCount;
+        mBarWidth = (mWidth - getPaddingLeft() - getPaddingRight() - (mBarDistance * (mBarCount - 1))) / mBarCount;
     }
 
     @Override

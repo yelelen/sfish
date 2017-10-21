@@ -27,7 +27,7 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     protected LoadContent<T> mListener;
     private int mCount;
     private ElasticHelper<T> mElasticHelper;
-    private boolean isFrist = true;
+    private boolean isFirst = true;
     private static boolean isLabelDataEnd = false;
     private int mLabelStartIndex = 0;
     private static String mLastLabel = " ";
@@ -36,6 +36,7 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     private static final int REFRESH = 100;
     private static final int LABEL = 101;
     private static final int SUGGEST = 102;
+    private static final int ONE = 103;
     private static int mCurDataType = REFRESH;
 
 
@@ -44,6 +45,14 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         mListener = listener;
         mElasticHelper = new ElasticHelper<>(url, this);
         registerDbObserver();
+    }
+
+    public BasePresenter(String url, BaseDbHelper<T> dbHelper) {
+        this(url, dbHelper, null);
+    }
+
+    public void setListener(LoadContent<T> listener) {
+        mListener = listener;
     }
 
     public BaseDbHelper<T> getDbHelper() {
@@ -58,13 +67,23 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         mDbHelper.unregisterObserver(getModelClass(), this);
     }
 
-    public void loadData(final int count) {
+    public void loadMoreData(final int count) {
         setDataType(REFRESH);
         mCount = count;
         ThreadPoolHelper.getInstance().start(new Runnable() {
             @Override
             public void run() {
                 loadMoreFromNet(count, mDbHelper.LAST_INDEX);
+            }
+        });
+    }
+
+    public void loadOneData(final int id) {
+        setDataType(ONE);
+        ThreadPoolHelper.getInstance().start(new Runnable() {
+            @Override
+            public void run() {
+                loadOneFromNet(id);
             }
         });
     }
@@ -116,7 +135,8 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
             isLabelDataEnd = false;
         }
         if (isLabelDataEnd) {
-            mListener.onLoadDone(null);
+            if (mListener != null)
+                mListener.onLoadDone(null);
         } else {
             ThreadPoolHelper.getInstance().start(new Runnable() {
                 @Override
@@ -157,12 +177,14 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     @Override
     public void onLocalDone(List<T> datas) {
         if (datas != null && datas.size() > 0)
-            mListener.onLoadDone(datas);
+            if (mListener != null)
+                mListener.onLoadDone(datas);
         else {
             if (App.getInstance().isNetworkConnected()) {
                 loadMoreFromNet(mCount, mDbHelper.LAST_INDEX);
             } else {
-                mListener.onLoadFailed(null);
+                if (mListener != null)
+                    mListener.onLoadFailed(null);
             }
         }
     }
@@ -171,6 +193,10 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         if (count > 0 && lastOrder > 0) {
             fetchByOrder(count, lastOrder);
         }
+    }
+
+    private void loadOneFromNet(int id) {
+        fetchById(id);
     }
 
     public void loadLatestFromNet(int count, int maxOrder) {
@@ -188,7 +214,8 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         if (type == LABEL)
             loadLocalLabelData(mCount, mCurLabel);
         if (type == SUGGEST) {
-            mListener.onLoadDone(null);
+            if (mListener != null)
+                mListener.onLoadDone(null);
         }
     }
 
@@ -205,25 +232,25 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
             int type = mCurDataType;
             if (type == REFRESH)
                 changLastIndex(models);
-            if (type == LABEL) {
+            else if (type == LABEL) {
                 if (datas.size() < mCount) {
                     isLabelDataEnd = true;
                 }
                 mLabelStartIndex += datas.size();
-            }
-            if (type == SUGGEST) {
+            } else if (type == SUGGEST || type == ONE) {
                 // nothing to do
             }
-
-            mListener.onLoadDone(models);
+            if (mListener != null)
+                mListener.onLoadDone(models);
         } else {
-            mListener.onLoadDone(null);
+            if (mListener != null)
+                mListener.onLoadDone(null);
         }
     }
 
     private void changLastIndex(List<T> models) {
-        if (isFrist) {
-            isFrist = false;
+        if (isFirst) {
+            isFirst = false;
             mDbHelper.LAST_INDEX = mDbHelper.getMaxOrder() - models.size() + 1;
         } else
             mDbHelper.LAST_INDEX -= models.size();
@@ -231,7 +258,6 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
 
     @Override
     public void onDownloadDone(String path) {
-
     }
 
     @Override
@@ -254,6 +280,13 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         mElasticHelper.setParser(getParser(Contant.PARSER_TYPE_MORE));
         mElasticHelper.fetchByPost(json);
     }
+
+    protected void fetchById(int id) {
+        String json = buildOneJson(id);
+        mElasticHelper.setParser(getParser(Contant.PARSER_TYPE_ONE));
+        mElasticHelper.fetchByPost(json);
+    }
+
 
     protected void fetchByLabel(String label, int count, int startIndex) {
         String json = buildLabelJson(label, count, startIndex);
@@ -280,6 +313,10 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     }
 
     protected String buildMoreJson(int count, int index) {
+        return null;
+    }
+
+    protected String buildOneJson(int id) {
         return null;
     }
 

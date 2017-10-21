@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="wrap_content">
 
@@ -23,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/mm_height"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_logo"/>
+                tools:src="@drawable/ic_logo"/>
 
             <TextView
                 android:id="@+id/txt_title"
@@ -32,7 +33,7 @@
                 android:layout_margin="@dimen/len_4"
                 android:gravity="center"
                 android:layout_gravity="center_horizontal"
-                android:text="美女"
+                tools:text="美女"
                 android:textColor="#aa343434"
                 android:textSize="12sp"/>
 
@@ -50,7 +51,7 @@
                     android:id="@+id/txt_seen_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1234"
+                    tools:text="1234"
                     android:textColor="#afafaf"
                     android:textSize="12sp"
                     android:layout_marginLeft="@dimen/len_2"
@@ -69,7 +70,7 @@
                     android:id="@+id/txt_fav_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="234"
+                    tools:text="234"
                     android:textColor="#afafaf"
                     android:textSize="12sp"
                     android:layout_marginLeft="@dimen/len_2"

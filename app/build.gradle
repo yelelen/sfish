@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -32,6 +33,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
+    implementation "com.android.support:percent:$rootProject.ext.supportVersion"
     implementation "pub.devrel:easypermissions:$rootProject.ext.easyPMVersion"
     implementation "com.android.support:design:$rootProject.ext.supportVersion"
     implementation "com.android.support:support-v4:$rootProject.ext.supportVersion"

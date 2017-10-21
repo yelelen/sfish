@@ -155,7 +155,7 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
         mVoiceButtton.setListener(new VoiceButtton.Listener() {
             @Override
             public void onSingleClick() {
-                if (!mSpeechRecognizer.isListening()){
+                if (!mSpeechRecognizer.isListening()) {
                     mVoiceText.setText(getResources().getString(R.string.label_voice_recording));
                     mSpeechRecognizer.startListening(mRecognizerListener);
                 }
@@ -202,7 +202,7 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (lastVisiableItem == mAdapter.getItemCount() - 1) {
                         if (mCurDataType == REFRESH) {
-                            mPresenter.loadData(mCount);
+                            mPresenter.loadMoreData(mCount);
                         }
 
                         if (mCurDataType == LABEL) {
@@ -249,7 +249,7 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         setDataType(REFRESH);
-        mPresenter.loadData(mCount);
+        mPresenter.loadMoreData(mCount);
 
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mLayout.getLayoutParams();
         mOriginBottomMargin = params.bottomMargin;
@@ -580,6 +580,19 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
         });
     }
 
+    @Override
+    public void onLoadFailed(final String reason) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+                mHandler.sendEmptyMessage(Contant.MSG_NETWORK_UNAVAILABLE);
+            }
+        });
+    }
+
+
     private void handleItemTitle(List<MmItemModel> models) {
         if (models == null || models.size() <= 0)
             return;
@@ -600,18 +613,6 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
             }
             model.setTitle(builder.toString());
         }
-    }
-
-    @Override
-    public void onLoadFailed(final String reason) {
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-                mHandler.sendEmptyMessage(Contant.MSG_NETWORK_UNAVAILABLE);
-            }
-        });
     }
 
     private void setDataType(int type) {
@@ -854,7 +855,7 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
         isFirst = true;
         setDataType(REFRESH);
         mPresenter.setLastIndex(Contant.MAX_VALUE);
-        mPresenter.loadData(count);
+        mPresenter.loadMoreData(count);
     }
 
     public void loadSuggestData(int count, String s) {

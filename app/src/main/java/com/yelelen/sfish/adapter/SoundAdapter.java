@@ -2,6 +2,7 @@ package com.yelelen.sfish.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -29,8 +30,15 @@ import java.util.List;
  */
 
 public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
+    private SharedPreferences mPreferences;
+    private SharedPreferences.Editor mEditor;
 
-    @Override
+    public SoundAdapter(Context context) {
+        super();
+        mPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+        mEditor = mPreferences.edit();
+    }
+
     protected int getItemLayoutId() {
         return R.layout.item_sound;
     }
@@ -38,6 +46,16 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
     @Override
     protected SoundViewHolder onCreateViewHolderImpl(View root, int viewType) {
         return new SoundViewHolder(root);
+    }
+
+
+    @Override
+    public void onViewDetachedFromWindow(BaseViewHolder<SoundRecyclerModel> holder) {
+        super.onViewDetachedFromWindow(holder);
+        String label = ((SoundViewHolder)holder).getCurrLabel();
+        String key = ((SoundViewHolder)holder).getSharePreKey();
+        mEditor.putString(key, label);
+        mEditor.apply();
     }
 
     class SoundViewHolder extends BaseViewHolder<SoundRecyclerModel>
@@ -57,6 +75,7 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
         private int mCount = 6;
         private String mCurrLabel = "";
         private String mLastLabel = mCurrLabel;
+        private String mSharePreKey;
 
         public SoundViewHolder(View itemView) {
             super(itemView);
@@ -89,26 +108,54 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
             mPresenter = new SoundItemPresenter(this);
         }
 
+
         @Override
         protected void onBind(SoundRecyclerModel data) {
+            String category1 = data.getCategory1();
+            String category2 = data.getCategory2();
+            String category3 = data.getCategory3();
+
             mCategory.setText(data.getCategory());
-            if (TextUtils.isEmpty(data.getCategory1()))
+            if (TextUtils.isEmpty(category1))
                 mCategory1.setVisibility(View.GONE);
             else
-                mCategory1.setText(data.getCategory1());
+                mCategory1.setText(category1);
 
-            if (TextUtils.isEmpty(data.getCategory2()))
+            if (TextUtils.isEmpty(category2))
                 mCategory2.setVisibility(View.GONE);
             else
-                mCategory2.setText(data.getCategory2());
+                mCategory2.setText(category2);
 
-            if (TextUtils.isEmpty(data.getCategory2()))
+            if (TextUtils.isEmpty(category3))
                 mCategory3.setVisibility(View.GONE);
             else
-                mCategory3.setText(data.getCategory3());
+                mCategory3.setText(category3);
 
-            setCurrentLabel(data.getCategory());
-            mPresenter.loadLabelData(mCount, data.getCategory());
+            mSharePreKey = data.getCategory();
+            mCurrLabel = mPreferences.getString(mSharePreKey, mSharePreKey);
+            setCurrentLabel(mCurrLabel);
+            mPresenter.loadLabelData(mCount, mCurrLabel);
+
+            int labelId;
+            if (!mCurrLabel.equals(data.getCategory())) {
+                if (mCurrLabel.equals(category1))
+                    labelId = R.id.rb_sound_category_1;
+                else if (mCurrLabel.equals(category2))
+                    labelId = R.id.rb_sound_category_2;
+                else
+                    labelId = R.id.rb_sound_category_3;
+                mRadioGroup.check(labelId);
+                setRadioButttonTextColor(labelId);
+            }
+
+        }
+
+        public String getCurrLabel() {
+            return mCurrLabel;
+        }
+
+        public String getSharePreKey() {
+            return mSharePreKey;
         }
 
         @Override
@@ -203,6 +250,5 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
                     : mCategory3.getText().toString();
         }
     }
-
 
 }

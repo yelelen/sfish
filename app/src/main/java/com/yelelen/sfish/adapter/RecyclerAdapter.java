@@ -27,8 +27,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAd
     }
 
     public RecyclerAdapter(AdapterListener<T> adapterListener) {
-        mDatas = new ArrayList<>();
-        mAdapterListener = adapterListener;
+       this(new ArrayList<T>(), adapterListener);
     }
 
     public RecyclerAdapter(List<T> datas, AdapterListener<T> adapterListener) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -24,11 +25,11 @@
             android:clickable="true"/>
 
         <TextView
-            android:id="@+id/sound_play_album_name"
+            android:id="@+id/sound_play_track_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="原来这些歌还有这样的唱法"
+            tools:text="原来这些歌还有这样的唱法"
             android:gravity="center"
             android:layout_gravity="center"
             android:textColor="@android:color/white"
@@ -58,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="有声的紫襟"
+            tools:text="有声的紫襟"
             android:textAppearance="@style/TextAppearance.AppCompat.Notification.Info"
             android:textColor="@color/textSecond"
             android:textSize="@dimen/font_12"
@@ -81,7 +82,6 @@
                 android:layout_width="@dimen/len_6"
                 android:layout_height="@dimen/len_6"
                 android:layout_margin="@dimen/len_2"
-
                 android:src="@drawable/shape_sound_play_vp_indicator_normal"/>
 
             <ImageView

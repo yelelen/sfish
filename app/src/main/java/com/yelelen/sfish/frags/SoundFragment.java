@@ -37,7 +37,7 @@ public class SoundFragment extends BaseFragment  {
         super.initView(root);
 
         mRecyclerView = root.findViewById(R.id.sound_recyclerview);
-        mSoundAdapter = new SoundAdapter();
+        mSoundAdapter = new SoundAdapter(getContext());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mSoundAdapter);
     }

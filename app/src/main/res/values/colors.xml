@@ -18,4 +18,5 @@
     <color name="textLight">@color/colorLight</color>
     <color name="textDark">#202020</color>
     <color name="bg_color">#77efefef</color>
+    <color name="press_color">#d81e06</color>
 </resources>

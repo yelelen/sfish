@@ -109,6 +109,6 @@ public abstract class BaseDbHelper<T> {
         return null;
     }
 
-    public abstract List<T> getFromLocal(int count, boolean order);
-    public abstract int getMaxOrder();
+    public  List<T> getFromLocal(int count, boolean order) {return null;}
+    public int getMaxOrder() {return 0;}
 }
