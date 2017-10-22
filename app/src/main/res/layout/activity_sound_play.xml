@@ -34,7 +34,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textSize="@dimen/font_18"/>
+            android:textSize="@dimen/font_14"/>
         <ImageView
             android:id="@+id/sound_play_Download"
             android:layout_width="@dimen/len_44"

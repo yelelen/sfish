@@ -62,7 +62,7 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
     private MmAdapter mAdapter;
     private static MmPresenter mPresenter;
     private int mCount = 10;
-    private int lastVisiableItem;
+    private int lastVisibleItem;
     private GridLayoutManager mLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private CircleButton mHome;
@@ -195,12 +195,12 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
         // 这句话是为了，第一次进入页面的时候显示加载进度条
         mSwipeRefreshLayout.setProgressViewOffset(false, 0, Utils.dp2px(getActivity(), 20));
 
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (lastVisiableItem == mAdapter.getItemCount() - 1) {
+                    if (lastVisibleItem == mAdapter.getItemCount() - 1) {
                         if (mCurDataType == REFRESH) {
                             mPresenter.loadMoreData(mCount);
                         }
@@ -216,7 +216,7 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                lastVisiableItem = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                lastVisibleItem = mLayoutManager.findLastCompletelyVisibleItemPosition();
 
                 if (isMenuSee) {
                     stopAnimation();
@@ -515,18 +515,14 @@ public class MmFragment extends BaseFragment implements LoadContent<MmItemModel>
                             return;
                         }
 
-                    }
-
-                    if (type == SUGGEST) {
+                    } else if (type == SUGGEST) {
                         showPopupWindow(true);
                         if (!App.getInstance().isNetworkConnected) {
                             mHandler.sendEmptyMessage(Contant.MSG_NETWORK_UNAVAILABLE);
                             return;
                         }
                         return;
-                    }
-
-                    if (type == LABEL) {
+                    } else if (type == LABEL) {
                         if (!App.getInstance().isNetworkConnected)
                             mHandler.sendEmptyMessage(Contant.MSG_NETWORK_UNAVAILABLE);
                         else

@@ -46,6 +46,9 @@ public abstract class BaseActivity extends AppCompatActivity implements NetworkL
                 case Contant.MSG_NETWORK_UNAVAILABLE:
                     SnackbarUtil.showNetPrompt(BaseActivity.this, getString(R.string.network_unavailable));
                     break;
+                case Contant.MSG_SOUND_ALBUM_TRACK_NO_MORE:
+                    SnackbarUtil.showNetPrompt(BaseActivity.this, getString(R.string.sound_album_track_no_more));
+                    break;
                 case Contant.MSG_MM_SAVE_IMAGE:
                     String s1 = (String) msg.obj;
                     SnackbarUtil.showSaveImagePrompt(BaseActivity.this, s1);

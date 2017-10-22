@@ -9,7 +9,6 @@ import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.yelelen.sfish.contract.NetworkListener;
 import com.yelelen.sfish.receiver.NetworkStateReceiver;
-import com.yelelen.sfish.utils.Utils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +21,7 @@ public class App extends Application {
     public static final String TAG = Application.class.getSimpleName();
     public static String mMmImageBasePath;
     public static String mSoundAlbumBasePath;
+    public static String mSoundZhuboBasePath;
     public static Context mAppContext;
     public static final App instance;
     public boolean isWifiEnabled = false;
@@ -103,8 +103,7 @@ public class App extends Application {
         super.onCreate();
         mMmImageBasePath = getCacheDir() + "/mm/";
         mSoundAlbumBasePath = getCacheDir() + "/sound/image/";
-        Utils.createDirectory(mSoundAlbumBasePath);
-        Utils.createDirectory(mMmImageBasePath);
+        mSoundZhuboBasePath = getCacheDir() + "/sound/zhubo/";
         mAppContext = this;
 
         // 初始化数据库

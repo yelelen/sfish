@@ -25,4 +25,5 @@ public class Contant {
     public static final int PARSER_TYPE_MORE = 300;
     public static final int PARSER_TYPE_SUGGEST = 301;
     public static final int PARSER_TYPE_ONE = 302;
+    public static final int MSG_SOUND_ALBUM_TRACK_NO_MORE = 401 ;
 }

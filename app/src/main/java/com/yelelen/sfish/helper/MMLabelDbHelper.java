@@ -11,6 +11,16 @@ import java.util.List;
  */
 
 public class MMLabelDbHelper extends BaseDbHelper<MmLabelModel> {
+    public static final MMLabelDbHelper instance;
+
+    static {
+        instance = new MMLabelDbHelper();
+    }
+
+    public static MMLabelDbHelper getInstance() {
+        return instance;
+    }
+
     @Override
     public List<MmLabelModel> getFromLocal(int count, boolean order) {
         List<MmLabelModel> models = SQLite.select()
@@ -33,5 +43,13 @@ public class MMLabelDbHelper extends BaseDbHelper<MmLabelModel> {
                 .orderBy(MmLabelModel_Table._id, false)
                 .querySingle();
         return model == null ? 0 : model.getOrder();
+    }
+
+    public List<MmLabelModel> getDataFromLocal() {
+        List<MmLabelModel> models = SQLite.select()
+                .from(MmLabelModel.class)
+                .orderBy(MmLabelModel_Table._id, false )
+                .queryList();
+        return models;
     }
 }

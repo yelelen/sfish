@@ -420,6 +420,7 @@ public class CircleSeekBar extends View {
 
     public void setTotalDuration(int totalDuration) {
         mTotalDuration = totalDuration;
+        invalidate();
     }
 
     public int getProgressColor() {

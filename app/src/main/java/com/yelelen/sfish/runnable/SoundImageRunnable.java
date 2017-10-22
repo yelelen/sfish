@@ -83,6 +83,7 @@ public class SoundImageRunnable implements Runnable {
             } else {
                 mListener.onDownloadFailed(mContext.getString(R.string.error_no_response));
             }
+            response.close();
         } catch (Exception e) {
             e.printStackTrace();
             if (isFirst) {

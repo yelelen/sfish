@@ -148,6 +148,8 @@ public class MmLabelFragment extends BottomSheetDialogFragment
 
     @Override
     public void onLoadDone(final List<MmLabelModel> t) {
+        if (getActivity() == null)
+            return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -79,4 +79,6 @@
 是飞鸟与鱼的距离
 一个在天，一个却深潜海底.</string>
     <string name="label_voice_recording">正在采集您的声音...</string>
+    <string name="sound_album_track_no_more">没有更多的剧集了</string>
+    <string name="sound_album_desc">未能获取到该专辑的相关描述哦</string>
 </resources>

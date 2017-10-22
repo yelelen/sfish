@@ -6,6 +6,7 @@ import com.yelelen.sfish.Model.SoundTrackModel;
  * Created by yelelen on 17-10-21.
  */
 
-public interface SoundTrackItemClickListener {
+public interface SoundTrackItemListener {
     void onTrackClick(SoundTrackModel data);
+    void onLoadMore();
 }

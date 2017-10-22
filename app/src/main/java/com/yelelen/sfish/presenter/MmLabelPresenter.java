@@ -5,6 +5,7 @@ import com.yelelen.sfish.Model.MmLabelModel;
 import com.yelelen.sfish.contract.LoadContent;
 import com.yelelen.sfish.helper.BaseDbHelper;
 import com.yelelen.sfish.helper.Contant;
+import com.yelelen.sfish.helper.MMLabelDbHelper;
 import com.yelelen.sfish.helper.ThreadPoolHelper;
 import com.yelelen.sfish.parser.JsonParser;
 import com.yelelen.sfish.parser.MmLabelParser;
@@ -13,6 +14,7 @@ import com.yelelen.sfish.utils.Utils;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,5 +72,11 @@ public class MmLabelPresenter extends BasePresenter<MmLabelModel> {
     protected String buildMoreJson(int count, int index) {
         return "{\"query\":{\"range\":{\"mml_order\": {\"lt\":" + index + "}}}," + "\"sort\": {\"mml_order\":{\"order\":\"" +
                 Contant.DESC + "\"}}, \"size\":" + count + "}";
+    }
+
+    @Override
+    protected List<MmLabelModel> loadLocalLabelData(int count, String label) {
+        return MMLabelDbHelper.getInstance().getDataFromLocal();
+
     }
 }

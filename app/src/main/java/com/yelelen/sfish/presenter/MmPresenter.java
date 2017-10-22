@@ -152,7 +152,7 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
     }
 
     @Override
-    protected void loadLocalLabelData(int count, String label) {
+    protected List<MmItemModel> loadLocalLabelData(int count, String label) {
         if (!mLastLabel.equals(label)){
             mLastLabel = label;
             mLabelIndex = 0;
@@ -163,16 +163,14 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
                 .where(MmLabelIndexModel_Table._id.eq(label))
                 .querySingle();
         if (model == null || TextUtils.isEmpty(model.getOrders())) {
-            mListener.onLoadDone(null);
-            return;
+            return null;
         }
 
         List<MmItemModel> models = new ArrayList<>();
         String[] labels = model.getOrders().split(" ");
         count = Math.min(count, labels.length - mLabelIndex);
         if (count ==0) {
-            mListener.onLoadDone(null);
-            return;
+            return null;
         }
         for (int i = mLabelIndex; i < mLabelIndex + count; i++) {
             MmItemModel item = SQLite.select()
@@ -183,7 +181,7 @@ public class MmPresenter extends BasePresenter<MmItemModel> {
                 models.add(item);
         }
         mLabelIndex += count;
-        mListener.onLoadDone(models);
+        return models;
 
     }
 

@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 public class SoundTrackPresenter extends BasePresenter<SoundTrackModel>
-implements LoadContent<SoundTrackModel> {
+        implements LoadContent<SoundTrackModel> {
     private static final String SOUND_TRACK_URL = Contant.ES_URL + "audio/sounds/_search";
     private SoundTrackListener mListener;
 
@@ -54,5 +54,16 @@ implements LoadContent<SoundTrackModel> {
     @Override
     protected String buildOneJson(int id) {
         return "{\"query\":{\"term\":{\"as_order\":" + id + "}}}";
+    }
+
+    @Override
+    protected String buildIdsJson(List<Integer> ids) {
+        StringBuilder builder = new StringBuilder();
+        for (int id : ids) {
+            builder.append(String.valueOf(id)).append(",");
+        }
+        String result = builder.toString();
+        result = result.substring(0, result.lastIndexOf(","));
+        return "{\"query\":{\"terms\":{\"as_order\":[" + result + "]}}," + "\"size\":" + ids.size() + "}}}";
     }
 }

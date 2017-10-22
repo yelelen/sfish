@@ -1,5 +1,7 @@
 package com.yelelen.sfish.Model;
 
+import android.support.annotation.NonNull;
+
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -9,7 +11,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
  */
 
 @Table(database = DB.class)
-public class SoundTrackModel {
+public class SoundTrackModel implements Comparable<SoundTrackModel>{
     @PrimaryKey
     @Column(name = "_id")
     private int order;
@@ -20,6 +22,7 @@ public class SoundTrackModel {
     @Column(name = "paths")
     private String paths;
 
+
     public SoundTrackModel() {
     }
 
@@ -29,6 +32,7 @@ public class SoundTrackModel {
         this.duration = duration;
         this.paths = paths;
     }
+
 
     public int getOrder() {
         return order;
@@ -68,7 +72,15 @@ public class SoundTrackModel {
                 "order=" + order +
                 ", title='" + title + '\'' +
                 ", duration=" + duration +
-                ", paths=" + paths +
+                ", paths='" + paths + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(@NonNull SoundTrackModel o) {
+        if (this.order > o.getOrder())
+            return 1;
+        else
+            return -1;
     }
 }

@@ -80,14 +80,14 @@ public abstract class BaseDbHelper<T> {
             return;
 
         DatabaseDefinition definition = FlowManager.getDatabase(DB.class);
-        definition.beginTransactionAsync(new ITransaction() {
+        definition.executeTransaction(new ITransaction() {
             @Override
             public void execute(DatabaseWrapper databaseWrapper) {
                 ModelAdapter<T> adapter = FlowManager.getModelAdapter(clx);
                 adapter.saveAll(datas);
                 notifySave(clx, datas);
             }
-        }).build().execute();
+        });
     }
 
     public void delete(final Class<T> clx, final List<T> datas) {

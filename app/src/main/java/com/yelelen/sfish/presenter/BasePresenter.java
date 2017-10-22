@@ -3,6 +3,7 @@ package com.yelelen.sfish.presenter;
 import android.text.TextUtils;
 
 import com.yelelen.sfish.App;
+import com.yelelen.sfish.Model.SoundItemModel;
 import com.yelelen.sfish.contract.DbDataListener;
 import com.yelelen.sfish.contract.DownloadImage;
 import com.yelelen.sfish.contract.LoadContent;
@@ -11,7 +12,6 @@ import com.yelelen.sfish.contract.NetDataListener;
 import com.yelelen.sfish.helper.BaseDbHelper;
 import com.yelelen.sfish.helper.Contant;
 import com.yelelen.sfish.helper.ElasticHelper;
-import com.yelelen.sfish.helper.ThreadPoolHelper;
 import com.yelelen.sfish.parser.JsonParser;
 
 import java.util.ArrayList;
@@ -24,20 +24,24 @@ import java.util.List;
 public abstract class BasePresenter<T> implements NetDataListener<T>,
         LocalDataListener<T>, DbDataListener<T>, DownloadImage {
     private BaseDbHelper<T> mDbHelper;
-    protected LoadContent<T> mListener;
+    private LoadContent<T> mListener;
     private int mCount;
     private ElasticHelper<T> mElasticHelper;
     private boolean isFirst = true;
-    private static boolean isLabelDataEnd = false;
+    private  boolean isLabelDataEnd = false;
     private int mLabelStartIndex = 0;
-    private static String mLastLabel = " ";
-    private static String mCurLabel = " ";
+    private  String mLastLabel = " ";
+    private  String mCurLabel = " ";
 
     private static final int REFRESH = 100;
     private static final int LABEL = 101;
     private static final int SUGGEST = 102;
     private static final int ONE = 103;
-    private static int mCurDataType = REFRESH;
+    private static final int IDS = 104;
+    private int mCurDataType = REFRESH;
+
+    private int mCurOneOrder;
+    private List<Integer> mIds;
 
 
     public BasePresenter(String url, BaseDbHelper<T> dbHelper, LoadContent<T> listener) {
@@ -70,22 +74,20 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     public void loadMoreData(final int count) {
         setDataType(REFRESH);
         mCount = count;
-        ThreadPoolHelper.getInstance().start(new Runnable() {
-            @Override
-            public void run() {
-                loadMoreFromNet(count, mDbHelper.LAST_INDEX);
-            }
-        });
+        loadMoreFromNet(count, mDbHelper.LAST_INDEX);
+    }
+
+
+    public void loadDataByIds(List<Integer> ids) {
+        mIds = ids;
+        setDataType(IDS);
+        fetchByIds(ids);
     }
 
     public void loadOneData(final int id) {
         setDataType(ONE);
-        ThreadPoolHelper.getInstance().start(new Runnable() {
-            @Override
-            public void run() {
-                loadOneFromNet(id);
-            }
-        });
+        mCurOneOrder = id;
+        loadOneFromNet(id);
     }
 
     private void setDataType(int type) {
@@ -107,23 +109,25 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     public void loadLocalData(final int count) {
         setDataType(REFRESH);
         mCount = count;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mDbHelper.getFromLocal(count, false);
-            }
-        }).start();
+        mDbHelper.getFromLocal(count, false);
+    }
+
+    public void loadLocalDataByIds(final List<Integer> ids) {
+        List<T> models = new ArrayList<>();
+        for (Integer id : ids) {
+            T t = mDbHelper.getByOrder(id);
+            if (t != null)
+                models.add(t);
+        }
+        if (mListener != null)
+            mListener.onLoadDone(models);
     }
 
     public void loadLatestData(final int count) {
         setDataType(REFRESH);
-        ThreadPoolHelper.getInstance().start(new Runnable() {
-            @Override
-            public void run() {
-                loadLatestFromNet(count, mDbHelper.getMaxOrder());
-            }
-        });
+        loadLatestFromNet(count, mDbHelper.getMaxOrder());
     }
+
 
     public void loadLabelData(final int count, final String label) {
         setDataType(LABEL);
@@ -138,12 +142,7 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
             if (mListener != null)
                 mListener.onLoadDone(null);
         } else {
-            ThreadPoolHelper.getInstance().start(new Runnable() {
-                @Override
-                public void run() {
-                    fetchByLabel(label, count, mLabelStartIndex);
-                }
-            });
+            fetchByLabel(label, count, mLabelStartIndex);
         }
 
     }
@@ -151,12 +150,7 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
     public void loadSuggestData(final int count, final String s) {
         setDataType(SUGGEST);
         if (!TextUtils.isEmpty(s) && count > 0) {
-            ThreadPoolHelper.getInstance().start(new Runnable() {
-                @Override
-                public void run() {
-                    fetchBySuggest(count, s);
-                }
-            });
+            fetchBySuggest(count, s);
         }
     }
 
@@ -179,14 +173,14 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         if (datas != null && datas.size() > 0)
             if (mListener != null)
                 mListener.onLoadDone(datas);
-        else {
-            if (App.getInstance().isNetworkConnected()) {
-                loadMoreFromNet(mCount, mDbHelper.LAST_INDEX);
-            } else {
-                if (mListener != null)
-                    mListener.onLoadFailed(null);
+            else {
+                if (App.getInstance().isNetworkConnected()) {
+                    loadMoreFromNet(mCount, mDbHelper.LAST_INDEX);
+                } else {
+                    if (mListener != null)
+                        mListener.onLoadFailed(null);
+                }
             }
-        }
     }
 
     public void loadMoreFromNet(int count, int lastOrder) {
@@ -211,11 +205,17 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         int type = mCurDataType;
         if (type == REFRESH)
             loadLocalData(mCount);
-        if (type == LABEL)
-            loadLocalLabelData(mCount, mCurLabel);
-        if (type == SUGGEST) {
+        else if (type == LABEL) {
+            if (mListener != null)
+                mListener.onLoadDone(loadLocalLabelData(mCount, mCurLabel));
+        } else if (type == SUGGEST) {
             if (mListener != null)
                 mListener.onLoadDone(null);
+        } else if (type == ONE) {
+            if (mListener != null)
+                mListener.onLoadDone(loadLocalOneData(mCurOneOrder));
+        } else if (type == IDS) {
+            loadLocalDataByIds(mIds);
         }
     }
 
@@ -300,6 +300,13 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         mElasticHelper.fetchByPost(json);
     }
 
+    protected void fetchByIds(List<Integer> ids) {
+        String json = buildIdsJson(ids);
+        mElasticHelper.setParser(getParser(Contant.PARSER_TYPE_MORE));
+        mElasticHelper.fetchByPost(json);
+    }
+
+
     public abstract void handleData(T data);
 
     protected abstract Class<T> getModelClass();
@@ -320,10 +327,15 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         return null;
     }
 
+    protected String buildIdsJson(List<Integer> ids) {
+        return null;
+    }
+
     protected abstract JsonParser<T> getParser(int type);
 
-    protected void loadLocalLabelData(int count, String label) {
+    protected List<T> loadLocalLabelData(int count, String label) {
         // DO nothing, if need, the child must override the method
+        return null;
     }
 
 
@@ -332,5 +344,8 @@ public abstract class BasePresenter<T> implements NetDataListener<T>,
         return null;
     }
 
+    protected List<T> loadLocalOneData(int curOneOrder) {
+        return null;
+    }
 
 }

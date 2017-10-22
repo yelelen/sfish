@@ -37,16 +37,16 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public BaseViewHolder<T> onCreateViewHolder(ViewGroup parent, int viewType) {
-        View root = LayoutInflater.from(parent.getContext()).inflate(getItemLayoutId(), parent, false);
-        BaseViewHolder<T> holder = onCreateViewHolderImpl(root, viewType);
+            View root = LayoutInflater.from(parent.getContext()).inflate(getItemLayoutId(), parent, false);
+            BaseViewHolder<T> holder = onCreateViewHolderImpl(root, viewType);
 
-        root.setTag(R.id.tag_view_holder, holder);
-        root.setOnClickListener(this);
-        root.setOnLongClickListener(this);
+            root.setTag(R.id.tag_view_holder, holder);
+            root.setOnClickListener(this);
+            root.setOnLongClickListener(this);
 
-        holder.mCallback = this;
+            holder.mCallback = this;
 
-        return holder;
+            return holder;
     }
 
 
@@ -54,6 +54,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAd
     public int getItemCount() {
         return mDatas.size();
     }
+
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
@@ -64,6 +65,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAd
     protected abstract int getItemLayoutId();
 
     protected abstract BaseViewHolder<T> onCreateViewHolderImpl(View root, int viewType);
+
 
     @Override
     public void onClick(View v) {
@@ -139,6 +141,8 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAd
         notifyDataSetChanged();
     }
 
+
+
     public static abstract class BaseViewHolder<T> extends RecyclerView.ViewHolder {
         private AdapterCallback<T> mCallback;
         protected T mData;
@@ -161,10 +165,12 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAd
 
     }
 
+
     public interface AdapterListener<T> {
         void onItemClick(BaseViewHolder holder, T data);
 
         void onItemLongClick(BaseViewHolder holder, T data);
+
     }
 
     public abstract class AdapterListenerImpl<T> implements AdapterListener<T> {
@@ -177,5 +183,6 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAd
         public void onItemLongClick(BaseViewHolder holder, T data) {
 
         }
+
     }
 }

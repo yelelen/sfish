@@ -203,8 +203,9 @@ public class SoundAdapter extends RecyclerAdapter<SoundRecyclerModel> {
                                 models.add(model);
                             }
                             mSoundAlbumAdapter.replace(models);
+                            mPresenter.saveLabelIndex(t, mCurrLabel);
                         } else {
-                            if (mLastLabel != mCurrLabel) {
+                            if (!TextUtils.equals(mLastLabel, mCurrLabel)) {
                                 mSoundAlbumAdapter.replace(null);
                                 mEmpty.setVisibility(View.VISIBLE);
                             }

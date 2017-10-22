@@ -81,6 +81,7 @@
                     android:padding="@dimen/len_4"
                     android:gravity="center_vertical"
                     android:lineSpacingExtra="@dimen/len_4"
+                    android:maxLines="10"
                     android:textAppearance="@style/TextAppearance.AppCompat.Notification.Info"
                     android:background="@drawable/shape_album_desc"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -167,5 +168,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <ProgressBar
+        android:id="@+id/sound_album_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/sound_play_progressbar"
+        android:visibility="visible"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/len_40"
+        android:indeterminateDuration="1000"/>
 
 </android.support.design.widget.CoordinatorLayout>

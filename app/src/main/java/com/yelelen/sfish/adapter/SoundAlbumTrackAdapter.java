@@ -1,13 +1,15 @@
 package com.yelelen.sfish.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yelelen.sfish.Model.SoundTrackModel;
 import com.yelelen.sfish.R;
-import com.yelelen.sfish.contract.SoundTrackItemClickListener;
+import com.yelelen.sfish.contract.SoundTrackItemListener;
 import com.yelelen.sfish.utils.Utils;
 import com.yelelen.sfish.view.MusicBar;
 
@@ -17,11 +19,28 @@ import com.yelelen.sfish.view.MusicBar;
 
 public class SoundAlbumTrackAdapter extends RecyclerAdapter<SoundTrackModel>
     implements RecyclerAdapter.AdapterListener<SoundTrackModel>{
-    private SoundTrackItemClickListener mClickListener;
+    private SoundTrackItemListener mListener;
+    private int mLastVisibleItem;
 
-    public SoundAlbumTrackAdapter(SoundTrackItemClickListener listener) {
-        mClickListener = listener;
+    public SoundAlbumTrackAdapter(SoundTrackItemListener listener, RecyclerView recyclerView) {
+        mListener = listener;
         setAdapterListener(this);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && mLastVisibleItem == getItemCount() - 1) {
+                    mListener.onLoadMore();
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                mLastVisibleItem = ((LinearLayoutManager)recyclerView.getLayoutManager())
+                        .findLastCompletelyVisibleItemPosition();
+            }
+        });
     }
 
     @Override
@@ -62,8 +81,8 @@ public class SoundAlbumTrackAdapter extends RecyclerAdapter<SoundTrackModel>
 
     @Override
     public void onItemClick(BaseViewHolder holder, SoundTrackModel data) {
-        if (mClickListener != null)
-            mClickListener.onTrackClick(data);
+        if (mListener != null)
+            mListener.onTrackClick(data);
     }
 
     @Override

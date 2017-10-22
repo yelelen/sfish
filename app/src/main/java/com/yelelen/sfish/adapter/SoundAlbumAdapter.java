@@ -6,7 +6,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yelelen.sfish.Model.SoundAlbumItemModel;
 import com.yelelen.sfish.R;
 
@@ -48,8 +47,6 @@ public class SoundAlbumAdapter extends RecyclerAdapter<SoundAlbumItemModel> {
                     .load(data.getCover())
                     .placeholder(R.drawable.ic_sound_wait)
                     .centerCrop()
-                    .dontAnimate()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(mCover);
             mTitle.setText(data.getTitle());
         }

@@ -187,6 +187,7 @@
         style="@style/sound_play_progressbar"
         android:layout_width="96dp"
         android:layout_height="96dp"
+        android:indeterminateDuration="2000"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintEnd_toStartOf="@+id/sound_play_next"
         app:layout_constraintStart_toEndOf="@+id/sound_play_previous"
