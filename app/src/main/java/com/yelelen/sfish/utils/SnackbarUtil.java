@@ -14,6 +14,8 @@ import com.yelelen.sfish.R;
  */
 
 public class SnackbarUtil {
+    public static final int TOP_TO_DOWN = TSnackbar.APPEAR_FROM_TOP_TO_DOWN;
+    public static final int DOWN_TO_TOP = TSnackbar.APPEAR_FROM_BOTTOM_TO_TOP;
 
     public static void showNetPrompt(Activity activity, String message) {
         showPrompt(activity, message, TSnackbar.APPEAR_FROM_TOP_TO_DOWN);

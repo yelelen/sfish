@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.yelelen.sfish.utils.Utils;
+
 /**
  * Created by yelelen on 17-10-21.
  */
@@ -52,8 +54,8 @@ public class RecyclerViewDecoration extends RecyclerView.ItemDecoration {
 
     //画横线, 这里的parent其实是显示在屏幕显示的这部分
     public void drawHorizontalLine(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        int left = parent.getPaddingLeft();
-        int right = parent.getWidth() - parent.getPaddingRight();
+        int left = parent.getPaddingLeft() + Utils.dp2px(parent.getContext(), 16);
+        int right = parent.getWidth() - parent.getPaddingRight() - Utils.dp2px(parent.getContext(), 52);
         final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);

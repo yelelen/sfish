@@ -38,7 +38,7 @@
                     android:gravity="center"
                     android:padding="@dimen/len_4"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/colorAccent"
                     android:textSize="@dimen/font_18"
                     tools:text="有声的纸巾"/>
 
@@ -147,6 +147,16 @@
         android:layout_below="@id/sound_zhubo_brief"
         android:layout_margin="@dimen/len_4"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <ProgressBar
+        android:id="@+id/sound_zhubo_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/sound_play_progressbar"
+        android:visibility="visible"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="100dp"
+        android:indeterminateDuration="800"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

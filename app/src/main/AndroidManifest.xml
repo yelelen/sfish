@@ -52,14 +52,19 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
         </activity>
-
         <activity android:name=".activity.MeActivity">
         </activity>
-        <activity android:name=".activity.SoundPlayActivity">
-
+        <activity android:name=".activity.SoundPlayActivity"
+                  android:screenOrientation="portrait">
         </activity>
 
         <receiver android:name=".receiver.NetworkStateReceiver"/>
+
+        <service
+            android:name=".service.SoundService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

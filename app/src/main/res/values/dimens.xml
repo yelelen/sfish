@@ -55,4 +55,5 @@
     <dimen name="font_8">8sp</dimen>
     <dimen name="len_76">76dp</dimen>
     <dimen name="len_88">88dp</dimen>
+    <dimen name="len_46">46dp</dimen>
 </resources>

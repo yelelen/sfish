@@ -1,8 +1,13 @@
 package com.yelelen.sfish.activity;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -29,27 +34,32 @@ import com.yelelen.sfish.adapter.SoundAlbumAdapter;
 import com.yelelen.sfish.adapter.SoundAlbumTrackAdapter;
 import com.yelelen.sfish.adapter.SoundViewPagerAdapter;
 import com.yelelen.sfish.contract.LoadContent;
+import com.yelelen.sfish.contract.MediaPlayerListener;
 import com.yelelen.sfish.contract.SoundTrackItemListener;
 import com.yelelen.sfish.contract.SoundTrackListener;
 import com.yelelen.sfish.contract.SoundZhuboListener;
+import com.yelelen.sfish.contract.UpdateMusicBarListener;
 import com.yelelen.sfish.helper.Contant;
 import com.yelelen.sfish.presenter.SoundItemPresenter;
 import com.yelelen.sfish.presenter.SoundTrackPresenter;
 import com.yelelen.sfish.presenter.SoundZhuboPresenter;
+import com.yelelen.sfish.service.SoundService;
 import com.yelelen.sfish.utils.BlurUtil;
-import com.yelelen.sfish.utils.Utils;
+import com.yelelen.sfish.utils.SnackbarUtil;
 import com.yelelen.sfish.view.CircleSeekBar;
 import com.yelelen.sfish.view.RecyclerViewDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SoundPlayActivity extends BaseActivity implements LoadContent<SoundItemModel>,
         CircleSeekBar.OnStateChangeListener, View.OnClickListener, SoundTrackListener,
-        SoundTrackItemListener, SoundZhuboListener{
+        SoundTrackItemListener, SoundZhuboListener, MediaPlayerListener {
     private int mAlbumOrder;
     private String mAlbumCoverPath;
     private SoundItemPresenter mItemPresenter;
@@ -88,6 +98,8 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private ImageView mPlay;
     private ImageView mNext;
     private ImageView mForward15;
+    private ProgressBar mPlayerProgressBar;
+    private ImageView mPlayerOverEnd;
 
     private ImageView mAlbumCover;
     private TextView mAlbumTitle;
@@ -101,12 +113,13 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private SoundTrackPresenter mTrackPresenter;
 
     private List<Integer> mTrackIds;
-    private int mTrackCount = 20;
+    private int mTrackCount = 12;
     private int mTrackIndex = 0;
     private int mZhuboAlbumCount = 9;
 
     private SoundItemModel mCurrentAlbum;
     private SoundTrackModel mCurrentTrack;
+    private int mCurrentTrackIndex = 0;
     private SoundZhuboModel mCurrentZhubo;
 
     private boolean mIsFirstTrackBack = true;
@@ -122,6 +135,13 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private RecyclerView mZhuboRecycler;
     private SoundAlbumAdapter mZhuboAlbumAdapter;
     private int mZhuboAlbumLastVisiableItem;
+    private ProgressBar mZhuboProgressBar;
+
+    private SoundService.SoundBinder mSoundBinder;
+    private boolean mIsInitPlay = true;
+
+    private List<SoundTrackModel> mTrackModels;
+    private static Set<UpdateMusicBarListener> mMusicBarListeners;
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -141,6 +161,19 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             return true;
         }
     });
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mSoundBinder = (SoundService.SoundBinder) service;
+            mSoundBinder.setListener(SoundPlayActivity.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     @Override
     protected int getContentLayoutId() {
@@ -185,6 +218,9 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mPlay = mPlayer.findViewById(R.id.sound_play_play);
         mNext = mPlayer.findViewById(R.id.sound_play_next);
         mForward15 = mPlayer.findViewById(R.id.sound_play_forward_15);
+        mPlayerProgressBar = mPlayer.findViewById(R.id.sound_play_progressBar);
+        mPlayerOverEnd = mPlayer.findViewById(R.id.sound_play_progress_bar_completition);
+
 
         mAlbumCover = mAlbum.findViewById(R.id.sound_album_cover);
         mAlbumTitle = mAlbum.findViewById(R.id.sound_album_title);
@@ -203,19 +239,52 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mZhuboFollowNum = mZhubo.findViewById(R.id.sound_zhubo_follow_count);
         mZhuboNickname = mZhubo.findViewById(R.id.sound_zhubo_nickname);
         mZhuboRecycler = mZhubo.findViewById(R.id.sound_zhubo_recycler);
+        mZhuboProgressBar = mZhubo.findViewById(R.id.sound_zhubo_progressbar);
 
         mViews = new ArrayList<>();
         mViews.add(mZhubo);
         mViews.add(mPlayer);
         mViews.add(mAlbum);
 
+        initClickListener();
+
+        bindSoundService();
+
     }
 
+    private void bindSoundService() {
+        Intent intent = new Intent(this, SoundService.class);
+        startService(intent);
+        bindService(intent, mConnection, BIND_AUTO_CREATE);
+    }
 
+    private void initClickListener() {
+        mPlay.setOnClickListener(this);
+        mNext.setOnClickListener(this);
+        mPrevious.setOnClickListener(this);
+        mBack15.setOnClickListener(this);
+        mForward15.setOnClickListener(this);
+    }
+
+    public static void setMusicBarListener(UpdateMusicBarListener listener) {
+        if (listener != null) {
+            mMusicBarListeners.add(listener);
+        }
+    }
+
+    private void updateMusicBar(boolean isPause) {
+        if (mMusicBarListeners.size() > 0) {
+            for (UpdateMusicBarListener mMusicBarListener : mMusicBarListeners) {
+                mMusicBarListener.onUpdateMusicBar(isPause, mCurrentTrackIndex);
+            }
+        }
+    }
     @Override
     protected void initData() {
         super.initData();
         mTrackIds = new ArrayList<>();
+        mTrackModels = new ArrayList<>();
+        mMusicBarListeners = new HashSet<>();
 
         mItemPresenter = new SoundItemPresenter(this);
         mViewPagerAdapter = new SoundViewPagerAdapter(mViews);
@@ -275,6 +344,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE &&
                         mZhuboAlbumLastVisiableItem == mZhuboAlbumAdapter.getItemCount() - 1) {
+                    mZhuboProgressBar.setVisibility(View.VISIBLE);
                     setCurrentType(TYPE_ZHUBO_ALBUM);
                     loadZhuboAlbum(mZhuboAlbumCount);
                 }
@@ -284,7 +354,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                mZhuboAlbumLastVisiableItem = ((LinearLayoutManager)recyclerView.getLayoutManager())
+                mZhuboAlbumLastVisiableItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
                         .findLastCompletelyVisibleItemPosition();
             }
         });
@@ -328,14 +398,91 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             case R.id.sound_play_back:
                 finish();
                 break;
+            case R.id.sound_play_play:
+                playOrPause();
+                break;
+            case R.id.sound_play_next:
+                playNext();
+                break;
+            case R.id.sound_play_previous:
+                playPrevious();
+                break;
+            case R.id.sound_play_back_15:
+                playBack15();
+                break;
+            case R.id.sound_play_forward_15:
+                playForward15();
+                break;
             default:
                 break;
         }
     }
 
-    @Override
-    public void onSeek(int progress) {
+    private void playForward15() {
+        mSoundBinder.seekTo(mSoundBinder.getPlayedDuration() + 15);
+    }
 
+    private void playBack15() {
+        mSoundBinder.seekTo(mSoundBinder.getPlayedDuration() - 15);
+    }
+
+    private void playNext() {
+        ++mCurrentTrackIndex;
+        if (mCurrentTrackIndex >= mTrackModels.size()) {
+            mCurrentTrackIndex--;
+            mNext.setEnabled(false);
+            loadTrack(mTrackCount);
+            SnackbarUtil.showPrompt(this, "正在努力加载剧集...",
+                    SnackbarUtil.TOP_TO_DOWN);
+        } else {
+            mCurrentTrack = mTrackModels.get(mCurrentTrackIndex);
+            initPlay();
+            updatePlayerUi();
+        }
+
+    }
+
+    private void playPrevious() {
+        --mCurrentTrackIndex;
+        if (mCurrentTrackIndex < 0) {
+            mCurrentTrackIndex = 0;
+            mCurrentTrack = mTrackModels.get(0);
+            SnackbarUtil.showPrompt(this, getString(R.string.label_sound_play_first),
+                    SnackbarUtil.TOP_TO_DOWN);
+        } else {
+            mCurrentTrack = mTrackModels.get(mCurrentTrackIndex);
+            initPlay();
+            updatePlayerUi();
+        }
+
+    }
+
+
+    private void playOrPause() {
+        if (!mSoundBinder.isPlaying()) {
+            if (mIsInitPlay) {
+                mIsInitPlay = false;
+                initPlay();
+            } else {
+                mSoundBinder.play();
+            }
+        } else {
+            mSoundBinder.pause();
+        }
+    }
+
+    private void initPlay() {
+        String[] paths = mCurrentTrack.getPaths().split(",");
+        mSoundBinder.init(paths[0]);
+        mPlayerProgressBar.setVisibility(View.VISIBLE);
+        mPlayerOverEnd.setVisibility(View.GONE);
+        mSeekBar.setProgressSweepAngle(0);
+        updateMusicBar(false);
+    }
+
+    @Override
+    public void onSeek(float progress) {
+        mSoundBinder.seekTo(Math.round(progress * mCurrentTrack.getDuration()));
     }
 
     @Override
@@ -363,50 +510,51 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
 
     @Override
     public void onLoadDone(final List<SoundItemModel> t) {
-        if (t != null && t.size() > 0) {
-            if (mCurrentType == TYPE_CURRENT_ALBUM) {
-                mCurrentAlbum = t.get(0);
-                updateAlbumUi(mCurrentAlbum);
-                String[] ids = mCurrentAlbum.getSounds().split(",");
-                for (String id : ids) {
-                    mTrackIds.add(Integer.valueOf(id));
-                }
-                loadTrack(mTrackCount);
-                loadZhubo(mCurrentAlbum.getZhuboId());
-            } else if (mCurrentType == TYPE_ZHUBO_ALBUM) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (t != null && t.size() > 0) {
+                    if (mCurrentType == TYPE_CURRENT_ALBUM) {
+                        mCurrentAlbum = t.get(0);
+                        updateAlbumUi(mCurrentAlbum);
+                        String[] ids = mCurrentAlbum.getSounds().split(",");
+                        for (String id : ids) {
+                            mTrackIds.add(Integer.valueOf(id));
+                        }
+                        loadTrack(mTrackCount);
+                        loadZhubo(mCurrentAlbum.getZhuboId());
+                    } else if (mCurrentType == TYPE_ZHUBO_ALBUM) {
+
+                        mZhuboProgressBar.setVisibility(View.GONE);
                         for (SoundItemModel soundItemModel : t) {
                             SoundAlbumItemModel model = new SoundAlbumItemModel(soundItemModel);
                             mZhuboAlbumAdapter.add(model);
                         }
                     }
-                });
 
+                } else {
+                    if (mCurrentType == TYPE_ZHUBO_ALBUM) {
+                        mZhuboProgressBar.setVisibility(View.GONE);
+                    }
+                }
             }
+        });
 
-        }
     }
 
 
-
     private void updateAlbumUi(final SoundItemModel model) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Glide.with(SoundPlayActivity.this)
-                        .load(mAlbumCoverPath)
-                        .placeholder(R.drawable.ic_sound_wait)
-                        .centerCrop()
-                        .into(mAlbumCover);
-                mAlbumTitle.setText(model.getTitle());
-                mAlbumTag.setText(model.getTag());
-                mAlbumUpdateTime.setText(model.getLastUpdateTime());
-                mAlbumPlayCount.setText(model.getPlayCount());
-                mAlbumDesc.setText(model.getDesc());
-            }
-        });
+        Glide.with(SoundPlayActivity.this)
+                .load(mAlbumCoverPath)
+                .placeholder(R.drawable.ic_sound_wait)
+                .centerCrop()
+                .into(mAlbumCover);
+        mAlbumTitle.setText(model.getTitle());
+        mAlbumTag.setText(model.getTag());
+        mAlbumUpdateTime.setText(model.getLastUpdateTime());
+        mAlbumPlayCount.setText(model.getPlayCount());
+        mAlbumDesc.setText(model.getDesc());
+
     }
 
     private void updatePlayerUi() {
@@ -415,6 +563,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         if (mCurrentTrack != null) {
             mTrackTitle.setText(mCurrentTrack.getTitle());
             mSeekBar.setTotalDuration(mCurrentTrack.getDuration());
+            mSeekBar.stop();
         } else {
             mSeekBar.setTotalDuration(0);
         }
@@ -446,9 +595,11 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             @Override
             public void run() {
                 mAlbumProgressBar.setVisibility(View.GONE);
+                mNext.setEnabled(true);
                 if (models != null && models.size() > 0) {
                     Collections.sort(models);
                     mTrackAdapter.add(models);
+                    mTrackModels.addAll(models);
                     if (mIsFirstTrackBack) {
                         mIsFirstTrackBack = false;
                         mCurrentTrack = models.get(0);
@@ -476,10 +627,20 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     }
 
 
-
     @Override
-    public void onTrackClick(SoundTrackModel data) {
-        Utils.showToast(this, "Track clicked");
+    public void onTrackClick(SoundTrackModel data, int position) {
+        mCurrentTrackIndex = position;
+        if (!mCurrentTrack.equals(data)) {
+            mCurrentTrack = data;
+            mIsInitPlay = true;
+            if (mSoundBinder.isPlaying())
+                mSoundBinder.pause();
+            playOrPause();
+            updatePlayerUi();
+        } else {
+            playOrPause();
+        }
+
     }
 
     @Override
@@ -488,8 +649,43 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     }
 
     @Override
+    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+        mSeekBar.setSecondProgressSweepAngle((int) (mSeekBar.getTotalDegree() * percent / 100));
+        if (percent == 100) {
+            mPlayerProgressBar.setVisibility(View.GONE);
+            mPlayerOverEnd.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onPlayerPlay() {
+        mSeekBar.start();
+        mPlay.setImageResource(R.drawable.ic_sound_play_stop);
+        updateMusicBar(false);
+    }
+
+    @Override
+    public void onPlayerPause() {
+        mSeekBar.stop();
+        mPlay.setImageResource(R.drawable.ic_sound_play);
+       updateMusicBar(true);
+    }
+
+    @Override
+    public void onSeekDone() {
+        float degree = mSoundBinder.getPlayedDuration() * 1.0f / mSoundBinder.getDuration() * mSeekBar.getTotalDegree();
+        mSeekBar.setProgressSweepAngle((int) degree);
+    }
+
+    @Override
+    public void onCompletion() {
+        mSeekBar.stop();
+    }
+
+    @Override
     protected void onDestroy() {
         mHandler.removeCallbacksAndMessages(null);
+        unbindService(mConnection);
         super.onDestroy();
     }
 }

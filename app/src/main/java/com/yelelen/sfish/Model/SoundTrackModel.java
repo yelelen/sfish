@@ -21,18 +21,23 @@ public class SoundTrackModel implements Comparable<SoundTrackModel>{
     private int duration;
     @Column(name = "paths")
     private String paths;
+    @Column(name = "play_count")
+    private int playCount;
+    @Column(name = "fav_count")
+    private int favCount;
 
 
     public SoundTrackModel() {
     }
 
-    public SoundTrackModel(int order, String title, int duration, String paths) {
+    public SoundTrackModel(int order, String title, int duration, String paths, int playCount, int favCount) {
         this.order = order;
         this.title = title;
         this.duration = duration;
         this.paths = paths;
+        this.playCount = playCount;
+        this.favCount = favCount;
     }
-
 
     public int getOrder() {
         return order;
@@ -66,6 +71,22 @@ public class SoundTrackModel implements Comparable<SoundTrackModel>{
         this.paths = paths;
     }
 
+    public int getPlayCount() {
+        return playCount;
+    }
+
+    public void setPlayCount(int playCount) {
+        this.playCount = playCount;
+    }
+
+    public int getFavCount() {
+        return favCount;
+    }
+
+    public void setFavCount(int favCount) {
+        this.favCount = favCount;
+    }
+
     @Override
     public String toString() {
         return "SoundTrackModel{" +
@@ -73,6 +94,8 @@ public class SoundTrackModel implements Comparable<SoundTrackModel>{
                 ", title='" + title + '\'' +
                 ", duration=" + duration +
                 ", paths='" + paths + '\'' +
+                ", playCount=" + playCount +
+                ", favCount=" + favCount +
                 '}';
     }
 
@@ -82,5 +105,18 @@ public class SoundTrackModel implements Comparable<SoundTrackModel>{
             return 1;
         else
             return -1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
+        if (obj instanceof SoundTrackModel) {
+            if (this.order == ((SoundTrackModel) obj).order)
+                return true;
+        }
+        return false;
     }
 }

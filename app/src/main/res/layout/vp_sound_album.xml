@@ -55,7 +55,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/colorAccent"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:textSize="@dimen/font_20"
                     app:layout_constraintBottom_toTopOf="@+id/guideline15"
@@ -99,7 +99,7 @@
                     android:layout_marginTop="12dp"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
                     app:layout_constraintTop_toTopOf="@+id/guideline15"
-                    app:srcCompat="@drawable/ic_sound_album_tag"/>
+                    android:src="@drawable/ic_sound_album_tag"/>
 
                 <TextView
                     android:id="@+id/sound_album_tag"
@@ -121,7 +121,7 @@
                     android:layout_marginTop="12dp"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
                     app:layout_constraintTop_toBottomOf="@+id/imageView4"
-                    app:srcCompat="@drawable/ic_sound_album_update"/>
+                    android:src="@drawable/ic_sound_album_update"/>
 
                 <TextView
                     android:id="@+id/sound_album_update"
@@ -144,7 +144,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/sound_album_cover"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
                     app:layout_constraintTop_toBottomOf="@+id/imageView6"
-                    app:srcCompat="@drawable/sound_album_play"/>
+                    android:src="@drawable/sound_album_play"/>
 
                 <TextView
                     android:id="@+id/sound_album_play_count"
@@ -176,6 +176,6 @@
         android:visibility="visible"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/len_40"
-        android:indeterminateDuration="1000"/>
+        android:indeterminateDuration="500"/>
 
 </android.support.design.widget.CoordinatorLayout>

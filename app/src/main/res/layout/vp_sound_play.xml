@@ -72,7 +72,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline10"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="@+id/guideline6"
-        app:srcCompat="@drawable/ic_sound_order"
+        android:src="@drawable/ic_sound_order"
         android:clickable="true"/>
 
     <ImageView
@@ -88,7 +88,7 @@
         app:layout_constraintEnd_toStartOf="@+id/sound_play_fav"
         app:layout_constraintStart_toEndOf="@+id/sound_play_order"
         app:layout_constraintTop_toTopOf="@+id/guideline6"
-        app:srcCompat="@drawable/sel_sound_time"
+        android:src="@drawable/sel_sound_time"
         android:clickable="true"/>
 
 
@@ -103,7 +103,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline10"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintTop_toTopOf="@+id/guideline6"
-        app:srcCompat="@drawable/sel_sound_fav"
+        android:src="@drawable/sel_sound_fav"
         android:clickable="true"/>
 
     <ImageView
@@ -119,7 +119,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline10"
-        app:srcCompat="@drawable/sel_sound_back_15"
+        android:src="@drawable/sel_sound_back_15"
         android:clickable="true"/>
 
     <ImageView
@@ -135,7 +135,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline12"
         app:layout_constraintTop_toTopOf="@+id/guideline10"
-        app:srcCompat="@drawable/sel_sound_forward_15"
+        android:src="@drawable/sel_sound_forward_15"
         android:clickable="true"/>
 
     <ImageView
@@ -150,7 +150,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline11"
         app:layout_constraintTop_toTopOf="@+id/guideline10"
         app:layout_constraintVertical_bias="0.506"
-        app:srcCompat="@drawable/sel_sound_previous"
+        android:src="@drawable/sel_sound_previous"
         android:clickable="true"/>
 
     <ImageView
@@ -164,7 +164,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintEnd_toStartOf="@+id/guideline12"
         app:layout_constraintTop_toTopOf="@+id/guideline10"
-        app:srcCompat="@drawable/sel_sound_next"
+        android:src="@drawable/sel_sound_next"
         android:clickable="true"/>
 
     <ImageView
@@ -179,8 +179,7 @@
         app:layout_constraintEnd_toStartOf="@+id/sound_play_next"
         app:layout_constraintStart_toEndOf="@+id/sound_play_previous"
         app:layout_constraintTop_toTopOf="@+id/guideline10"
-        app:srcCompat="@drawable/shape_sound_play_outring"
-        android:visibility="gone"/>
+        android:src="@drawable/shape_sound_play_outring"/>
 
     <ProgressBar
         android:id="@+id/sound_play_progressBar"
@@ -188,6 +187,7 @@
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:indeterminateDuration="2000"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintEnd_toStartOf="@+id/sound_play_next"
         app:layout_constraintStart_toEndOf="@+id/sound_play_previous"
@@ -198,38 +198,40 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginStart="7dp"
         android:layout_marginTop="10dp"
         android:padding="@dimen/len_4"
         app:layout_constraintBottom_toBottomOf="@+id/sound_play_progressBar"
         app:layout_constraintEnd_toEndOf="@+id/sound_play_progressBar"
         app:layout_constraintStart_toStartOf="@+id/sound_play_progressBar"
         app:layout_constraintTop_toTopOf="@+id/sound_play_progressBar"
-        app:srcCompat="@drawable/ic_sound_play"
+        android:src="@drawable/ic_sound_play"
         android:clickable="true"/>
 
-    <com.yelelen.sfish.view.CircleSeekBar
-        android:id="@+id/sound_play_seekbar"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/len_16"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
-        app:layout_constraintTop_toTopOf="@+id/guideline5"/>
+        app:layout_constraintTop_toTopOf="@+id/guideline5">
+        <com.yelelen.sfish.view.CircleSeekBar
+            android:id="@+id/sound_play_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"/>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/sound_play_cover"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/len_36"
-        android:layout_marginEnd="@dimen/len_36"
-        android:layout_marginBottom="@dimen/len_36"
-        app:civ_border_color="@android:color/white"
-        app:civ_border_width="@dimen/len_2"
-        app:layout_constraintBottom_toTopOf="@+id/guideline6"
-        app:layout_constraintEnd_toStartOf="@+id/guideline8"
-        app:layout_constraintStart_toStartOf="@+id/guideline7"
-        app:layout_constraintTop_toTopOf="@+id/guideline5"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/sound_play_cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:civ_border_color="@android:color/white"
+            android:padding="@dimen/len_38"
+            android:layout_marginBottom="@dimen/len_46"
+            app:civ_border_width="@dimen/len_2"
+            android:layout_gravity="center_horizontal"/>
+    </FrameLayout>
+
 </android.support.constraint.ConstraintLayout>

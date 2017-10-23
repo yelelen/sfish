@@ -30,6 +30,8 @@ public class SoundTrackParser extends JsonParserImpl<SoundTrackModel> {
                 model.setOrder(source.getInt("as_order"));
                 model.setTitle(source.getString("as_title"));
                 model.setDuration(source.getInt("as_duration"));
+                model.setPlayCount(source.getInt("as_play_count"));
+                model.setFavCount(source.getInt("as_favorites_count"));
                 model.setPaths(source.getString("as_play_paths"));
                 models.add(model);
             }

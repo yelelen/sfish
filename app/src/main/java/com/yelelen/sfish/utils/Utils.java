@@ -361,5 +361,20 @@ public class Utils {
 
         return angle;
     }
+
+    public static String getDurationText(int second) {
+        int m = second / 60;
+        int s = second % 60;
+        String str = s < 10 ? ("0" + String.valueOf(s)) : String.valueOf(s);
+        if (second < 0) {
+            return "0:00";
+        } else if (second >= 0 && second < 60) {
+            return "0:" + str;
+        } else {
+            return String.valueOf(m) + ":" + str;
+        }
+
+
+    }
 }
 

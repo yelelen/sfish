@@ -7,6 +7,6 @@ import com.yelelen.sfish.Model.SoundTrackModel;
  */
 
 public interface SoundTrackItemListener {
-    void onTrackClick(SoundTrackModel data);
+    void onTrackClick(SoundTrackModel data, int position);
     void onLoadMore();
 }
