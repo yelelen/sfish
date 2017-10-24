@@ -33,6 +33,7 @@ public class SoundTrackParser extends JsonParserImpl<SoundTrackModel> {
                 model.setPlayCount(source.getInt("as_play_count"));
                 model.setFavCount(source.getInt("as_favorites_count"));
                 model.setPaths(source.getString("as_play_paths"));
+                model.setAlbumId(source.getInt("as_album_id"));
                 models.add(model);
             }
             return models;

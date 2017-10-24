@@ -21,6 +21,7 @@ public class SoundService extends Service {
     private MediaPlayer mPlayer;
     private SoundBinder mBinder;
     private MediaPlayerListener mListener;
+    private String mCurrentPathOrUrl;
 
     public SoundService() {
         Log.e("xxxx", "SoundService");
@@ -85,6 +86,25 @@ public class SoundService extends Service {
                     mListener.onCompletion();
             }
         });
+
+        mPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+                    mPlayer.release();
+                    mPlayer = null;
+                    mPlayer = new MediaPlayer();
+                    mBinder.init(mCurrentPathOrUrl);
+                }
+
+                if (what == MediaPlayer.MEDIA_ERROR_IO
+                        || what == MediaPlayer.MEDIA_ERROR_TIMED_OUT
+                        || what == MediaPlayer.MEDIA_ERROR_UNKNOWN)
+                    if (mListener != null)
+                        mListener.onError(getString(R.string.label_error_mediaplay_timeout));
+                return true;
+            }
+        });
     }
 
 
@@ -96,6 +116,8 @@ public class SoundService extends Service {
 
     public class SoundBinder extends Binder {
         public void init(String pathOrUrl) {
+            mCurrentPathOrUrl = pathOrUrl;
+
             if (mPlayer != null) {
                 if (mPlayer.isPlaying())
                     mPlayer.stop();
@@ -116,9 +138,10 @@ public class SoundService extends Service {
 
         public void play() {
             if (mPlayer != null && !mPlayer.isPlaying()) {
-                mPlayer.start();
-                if (mListener != null)
+                if (mListener != null) {
                     mListener.onPlayerPlay();
+                }
+                mPlayer.start();
             }
         }
 

@@ -82,4 +82,6 @@
     <string name="sound_album_track_no_more">没有更多的剧集了</string>
     <string name="sound_album_desc">未能获取到该专辑的相关描述哦</string>
     <string name="label_sound_play_first">已经是第一集了</string>
+    <string name="label_error_mediaplay_timeout">加载超时，请确保连接到有效的网络！</string>
+    <string name="label_sound_album_download_done">已经缓存，无需再次下载</string>
 </resources>

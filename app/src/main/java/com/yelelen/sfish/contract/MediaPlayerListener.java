@@ -12,4 +12,5 @@ public interface MediaPlayerListener {
     void onPlayerPause();
     void onCompletion();
     void onSeekDone();
+    void onError(String error);
 }

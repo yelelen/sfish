@@ -25,18 +25,30 @@ public class SoundTrackModel implements Comparable<SoundTrackModel>{
     private int playCount;
     @Column(name = "fav_count")
     private int favCount;
+    @Column(name = "album_id")
+    private int albumId;
 
 
     public SoundTrackModel() {
     }
 
-    public SoundTrackModel(int order, String title, int duration, String paths, int playCount, int favCount) {
+    public SoundTrackModel(int order, String title, int duration, String paths,
+                           int playCount, int favCount, int albumId) {
         this.order = order;
         this.title = title;
         this.duration = duration;
         this.paths = paths;
         this.playCount = playCount;
         this.favCount = favCount;
+        this.albumId = albumId;
+    }
+
+    public int getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(int albumId) {
+        this.albumId = albumId;
     }
 
     public int getOrder() {
@@ -96,6 +108,7 @@ public class SoundTrackModel implements Comparable<SoundTrackModel>{
                 ", paths='" + paths + '\'' +
                 ", playCount=" + playCount +
                 ", favCount=" + favCount +
+                ", albumId=" + albumId +
                 '}';
     }
 

@@ -36,14 +36,28 @@
             android:padding="@dimen/len_4"
             android:textColor="@android:color/white"
             tools:text="笼中雀019（自购版权，感谢支持）"/>
-        <ImageView
-            android:id="@+id/sound_album_track_download"
+
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/len_36"
-            android:layout_margin="@dimen/len_4"
-            android:padding="@dimen/len_4"
-            android:src="@drawable/sel_sound_album_download"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/sound_album_download_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="76%"
+                android:layout_gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/sound_album_track_download"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/len_36"
+                android:layout_margin="@dimen/len_4"
+                android:padding="@dimen/len_4"
+                android:src="@drawable/sel_sound_album_download"/>
+        </FrameLayout>
+
     </LinearLayout>
 
 

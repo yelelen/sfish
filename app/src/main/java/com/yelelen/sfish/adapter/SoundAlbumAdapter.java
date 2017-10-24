@@ -29,10 +29,11 @@ public class SoundAlbumAdapter extends RecyclerAdapter<SoundAlbumItemModel> {
         return new SoundAlbumViewHolder(root);
     }
 
-    class SoundAlbumViewHolder extends BaseViewHolder<SoundAlbumItemModel> {
+    public class SoundAlbumViewHolder extends BaseViewHolder<SoundAlbumItemModel> {
         private ImageView mCover;
         private Context mContext;
         private TextView mTitle;
+
 
         public SoundAlbumViewHolder(View itemView) {
             super(itemView);

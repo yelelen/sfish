@@ -1,6 +1,7 @@
 package com.yelelen.sfish.activity;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
@@ -49,11 +50,10 @@ import com.yelelen.sfish.utils.SnackbarUtil;
 import com.yelelen.sfish.view.CircleSeekBar;
 import com.yelelen.sfish.view.RecyclerViewDecoration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -80,6 +80,11 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private static final int TYPE_CURRENT_ALBUM = 100;
     private static final int TYPE_ZHUBO_ALBUM = 101;
     private int mCurrentType = TYPE_CURRENT_ALBUM;
+
+    private static final int ORDER_ORDER = 200;
+    private static final int ORDER_RANDOM = 201;
+    private static final int ORDER_REPEAT = 202;
+    private int mCurrentOrder = ORDER_ORDER;
 
 
     private CircleImageView mPlayCover;
@@ -113,7 +118,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private SoundTrackPresenter mTrackPresenter;
 
     private List<Integer> mTrackIds;
-    private int mTrackCount = 12;
+    private int mTrackCount = 15;
     private int mTrackIndex = 0;
     private int mZhuboAlbumCount = 9;
 
@@ -134,14 +139,14 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private TextView mZhuboDesc;
     private RecyclerView mZhuboRecycler;
     private SoundAlbumAdapter mZhuboAlbumAdapter;
-    private int mZhuboAlbumLastVisiableItem;
+    private int mZhuboAlbumLastVisibleItem;
     private ProgressBar mZhuboProgressBar;
 
     private SoundService.SoundBinder mSoundBinder;
     private boolean mIsInitPlay = true;
 
     private List<SoundTrackModel> mTrackModels;
-    private static Set<UpdateMusicBarListener> mMusicBarListeners;
+    private static List<UpdateMusicBarListener> mMusicBarListeners;
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -264,6 +269,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mPrevious.setOnClickListener(this);
         mBack15.setOnClickListener(this);
         mForward15.setOnClickListener(this);
+        mOrder.setOnClickListener(this);
     }
 
     public static void setMusicBarListener(UpdateMusicBarListener listener) {
@@ -275,16 +281,17 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private void updateMusicBar(boolean isPause) {
         if (mMusicBarListeners.size() > 0) {
             for (UpdateMusicBarListener mMusicBarListener : mMusicBarListeners) {
-                mMusicBarListener.onUpdateMusicBar(isPause, mCurrentTrackIndex);
+                mMusicBarListener.onUpdateMusicBar(isPause, mCurrentTrack);
             }
         }
     }
+
     @Override
     protected void initData() {
         super.initData();
         mTrackIds = new ArrayList<>();
         mTrackModels = new ArrayList<>();
-        mMusicBarListeners = new HashSet<>();
+        mMusicBarListeners = new ArrayList<>();
 
         mItemPresenter = new SoundItemPresenter(this);
         mViewPagerAdapter = new SoundViewPagerAdapter(mViews);
@@ -328,7 +335,14 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mZhuboAlbumAdapter = new SoundAlbumAdapter(new RecyclerAdapter.AdapterListener<SoundAlbumItemModel>() {
             @Override
             public void onItemClick(RecyclerAdapter.BaseViewHolder holder, SoundAlbumItemModel data) {
-
+                if (holder instanceof SoundAlbumAdapter.SoundAlbumViewHolder) {
+                    Context context = ((SoundAlbumAdapter.SoundAlbumViewHolder) holder).itemView.getContext();
+                    Intent intent = new Intent(context, SoundPlayActivity.class);
+                    intent.putExtra("SoundAlbum", data.getOrder());
+                    intent.putExtra("SoundAlbumCover", data.getCover());
+                    context.startActivity(intent);
+                    finish();
+                }
             }
 
             @Override
@@ -343,7 +357,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE &&
-                        mZhuboAlbumLastVisiableItem == mZhuboAlbumAdapter.getItemCount() - 1) {
+                        mZhuboAlbumLastVisibleItem == mZhuboAlbumAdapter.getItemCount() - 1) {
                     mZhuboProgressBar.setVisibility(View.VISIBLE);
                     setCurrentType(TYPE_ZHUBO_ALBUM);
                     loadZhuboAlbum(mZhuboAlbumCount);
@@ -354,7 +368,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                mZhuboAlbumLastVisiableItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                mZhuboAlbumLastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
                         .findLastCompletelyVisibleItemPosition();
             }
         });
@@ -392,6 +406,16 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             mIndicator3.setImageResource(R.drawable.shape_sound_play_vp_indicator_check);
     }
 
+    private void setCurrentOrder(int order) {
+        mCurrentOrder = order;
+        updateOrderImage(mCurrentOrder);
+    }
+
+    private void updateOrderImage(int currentOrder) {
+        mOrder.setImageResource(currentOrder == ORDER_ORDER ? R.drawable.ic_sound_order :
+                (currentOrder == ORDER_REPEAT) ? R.drawable.ic_sound_repeat : R.drawable.ic_sound_random);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -413,9 +437,17 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             case R.id.sound_play_forward_15:
                 playForward15();
                 break;
+            case R.id.sound_play_order:
+                switchOrder();
+                break;
             default:
                 break;
         }
+    }
+
+    private void switchOrder() {
+        int order = (++mCurrentOrder - ORDER_ORDER) % 3 + ORDER_ORDER;
+        setCurrentOrder(order);
     }
 
     private void playForward15() {
@@ -427,62 +459,77 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     }
 
     private void playNext() {
-        ++mCurrentTrackIndex;
-        if (mCurrentTrackIndex >= mTrackModels.size()) {
-            mCurrentTrackIndex--;
-            mNext.setEnabled(false);
-            loadTrack(mTrackCount);
-            SnackbarUtil.showPrompt(this, "正在努力加载剧集...",
-                    SnackbarUtil.TOP_TO_DOWN);
+        if (mCurrentOrder == ORDER_ORDER)
+            playOrderNext();
+        else if (mCurrentOrder == ORDER_REPEAT) {
+            if (mIsInitPlay) {
+                initPlay();
+            } else {
+                mSoundBinder.seekTo(0);
+            }
         } else {
-            mCurrentTrack = mTrackModels.get(mCurrentTrackIndex);
-            initPlay();
-            updatePlayerUi();
+            playRandom();
         }
-
     }
 
-    private void playPrevious() {
-        --mCurrentTrackIndex;
-        if (mCurrentTrackIndex < 0) {
-            mCurrentTrackIndex = 0;
-            mCurrentTrack = mTrackModels.get(0);
-            SnackbarUtil.showPrompt(this, getString(R.string.label_sound_play_first),
-                    SnackbarUtil.TOP_TO_DOWN);
-        } else {
-            mCurrentTrack = mTrackModels.get(mCurrentTrackIndex);
-            initPlay();
-            updatePlayerUi();
-        }
 
+    private void playPrevious() {
+        if (mCurrentOrder == ORDER_ORDER)
+            playOrderPrevious();
+        else if (mCurrentOrder == ORDER_REPEAT) {
+            if (mIsInitPlay) {
+                initPlay();
+            } else {
+                mSoundBinder.seekTo(0);
+            }
+        } else {
+            playRandom();
+        }
     }
 
 
     private void playOrPause() {
-        if (!mSoundBinder.isPlaying()) {
-            if (mIsInitPlay) {
-                mIsInitPlay = false;
-                initPlay();
-            } else {
-                mSoundBinder.play();
-            }
+        if (mIsInitPlay) {
+            initPlay();
         } else {
-            mSoundBinder.pause();
+            if (!mSoundBinder.isPlaying())
+                mSoundBinder.play();
+            else
+                mSoundBinder.pause();
         }
+
     }
 
     private void initPlay() {
-        String[] paths = mCurrentTrack.getPaths().split(",");
-        mSoundBinder.init(paths[0]);
-        mPlayerProgressBar.setVisibility(View.VISIBLE);
-        mPlayerOverEnd.setVisibility(View.GONE);
-        mSeekBar.setProgressSweepAngle(0);
-        updateMusicBar(false);
+        mIsInitPlay = false;
+        mCurrentTrack = mTrackModels.get(mCurrentTrackIndex);
+        String path = App.mSoundTrackBasePath + String.valueOf(mCurrentTrack.getAlbumId()) +
+                File.separator + String.valueOf(mCurrentTrack.getOrder());
+        if (! new File(path).exists()) {
+            path = mCurrentTrack.getPaths().split(",")[0];
+            mPlayerProgressBar.setVisibility(View.VISIBLE);
+            mPlayerOverEnd.setVisibility(View.GONE);
+        } else {
+            mPlayerProgressBar.setVisibility(View.GONE);
+            mPlayerOverEnd.setVisibility(View.VISIBLE);
+        }
+        mSoundBinder.init(path);
+        updatePlayerUi();
+    }
+
+    private void disableImageView(ImageView v, boolean disable, int disableImageId, int normalId) {
+        v.setEnabled(!disable);
+        v.setImageResource(disable ? disableImageId : normalId);
     }
 
     @Override
     public void onSeek(float progress) {
-        mSoundBinder.seekTo(Math.round(progress * mCurrentTrack.getDuration()));
+        if (mIsInitPlay) {
+            initPlay();
+            mIsInitPlay = false;
+        } else {
+            mSoundBinder.seekTo(Math.round(progress * mCurrentTrack.getDuration()));
+        }
     }
 
     @Override
@@ -554,7 +601,10 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mAlbumUpdateTime.setText(model.getLastUpdateTime());
         mAlbumPlayCount.setText(model.getPlayCount());
         mAlbumDesc.setText(model.getDesc());
-
+        disableImageView(mBack15, true, R.drawable.ic_sound_back_15_gray,
+                R.drawable.sel_sound_back_15);
+        disableImageView(mForward15, true, R.drawable.ic_sound_forward_15_gray,
+                R.drawable.sel_sound_forward_15);
     }
 
     private void updatePlayerUi() {
@@ -563,10 +613,16 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         if (mCurrentTrack != null) {
             mTrackTitle.setText(mCurrentTrack.getTitle());
             mSeekBar.setTotalDuration(mCurrentTrack.getDuration());
-            mSeekBar.stop();
         } else {
             mSeekBar.setTotalDuration(0);
         }
+        mSeekBar.stop();
+        mSeekBar.setProgressSweepAngle(0);
+        mPlay.setImageResource(R.drawable.ic_sound_play);
+        disableImageView(mBack15, true, R.drawable.ic_sound_back_15_gray,
+                R.drawable.sel_sound_back_15);
+        disableImageView(mForward15, true, R.drawable.ic_sound_forward_15_gray,
+                R.drawable.sel_sound_forward_15);
 
     }
 
@@ -595,11 +651,12 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             @Override
             public void run() {
                 mAlbumProgressBar.setVisibility(View.GONE);
-                mNext.setEnabled(true);
                 if (models != null && models.size() > 0) {
                     Collections.sort(models);
                     mTrackAdapter.add(models);
                     mTrackModels.addAll(models);
+                    disableImageView(mNext, false, R.drawable.ic_sound_next_gray,
+                            R.drawable.sel_sound_next);
                     if (mIsFirstTrackBack) {
                         mIsFirstTrackBack = false;
                         mCurrentTrack = models.get(0);
@@ -636,7 +693,6 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             if (mSoundBinder.isPlaying())
                 mSoundBinder.pause();
             playOrPause();
-            updatePlayerUi();
         } else {
             playOrPause();
         }
@@ -661,6 +717,10 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     public void onPlayerPlay() {
         mSeekBar.start();
         mPlay.setImageResource(R.drawable.ic_sound_play_stop);
+        disableImageView(mBack15, false, R.drawable.ic_sound_back_15_gray,
+                R.drawable.sel_sound_back_15);
+        disableImageView(mForward15, false, R.drawable.ic_sound_forward_15_gray,
+                R.drawable.sel_sound_forward_15);
         updateMusicBar(false);
     }
 
@@ -668,7 +728,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     public void onPlayerPause() {
         mSeekBar.stop();
         mPlay.setImageResource(R.drawable.ic_sound_play);
-       updateMusicBar(true);
+        updateMusicBar(true);
     }
 
     @Override
@@ -678,9 +738,59 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     }
 
     @Override
+    public void onError(String error) {
+        SnackbarUtil.showNetPrompt(this, error);
+    }
+
+    @Override
     public void onCompletion() {
         mSeekBar.stop();
+        mPlay.setImageResource(R.drawable.ic_sound_play);
+        if (mCurrentOrder == ORDER_ORDER) {
+            playOrderNext();
+        } else if (mCurrentOrder == ORDER_REPEAT) {
+            if (mIsInitPlay) {
+                initPlay();
+            } else {
+                mSoundBinder.seekTo(0);
+            }
+        } else {
+            playRandom();
+        }
     }
+
+    private void playRandom() {
+        mCurrentTrackIndex = (int) (Math.random() * mTrackModels.size());
+        if (mCurrentTrackIndex == mTrackModels.size() - 1)
+            loadTrack(mTrackCount);
+        initPlay();
+    }
+
+    private void playOrderNext() {
+        ++mCurrentTrackIndex;
+        if (mCurrentTrackIndex == mTrackModels.size() - 1) {
+            disableImageView(mNext, true, R.drawable.ic_sound_next_gray, R.drawable.sel_sound_next);
+            loadTrack(mTrackCount);
+        }
+        initPlay();
+        disableImageView(mPrevious, false, R.drawable.ic_sound_previous_gray,
+                R.drawable.sel_sound_previous);
+
+    }
+
+    private void playOrderPrevious() {
+        --mCurrentTrackIndex;
+        if (mCurrentTrackIndex < 0) {
+            mCurrentTrackIndex = 0;
+            disableImageView(mPrevious, true, R.drawable.ic_sound_previous_gray,
+                    R.drawable.sel_sound_previous);
+            SnackbarUtil.showPrompt(this, getString(R.string.label_sound_play_first),
+                    SnackbarUtil.TOP_TO_DOWN);
+        } else {
+            initPlay();
+        }
+    }
+
 
     @Override
     protected void onDestroy() {

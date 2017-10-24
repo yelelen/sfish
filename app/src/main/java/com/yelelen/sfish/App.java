@@ -22,6 +22,7 @@ public class App extends Application {
     public static String mMmImageBasePath;
     public static String mSoundAlbumBasePath;
     public static String mSoundZhuboBasePath;
+    public static String mSoundTrackBasePath;
     public static Context mAppContext;
     public static final App instance;
     public boolean isWifiEnabled = false;
@@ -104,6 +105,7 @@ public class App extends Application {
         mMmImageBasePath = getCacheDir() + "/mm/";
         mSoundAlbumBasePath = getCacheDir() + "/sound/image/";
         mSoundZhuboBasePath = getCacheDir() + "/sound/zhubo/";
+        mSoundTrackBasePath = getCacheDir() + "/sound/download/";
         mAppContext = this;
 
         // 初始化数据库

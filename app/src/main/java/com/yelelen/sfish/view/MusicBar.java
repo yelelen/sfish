@@ -106,6 +106,7 @@ public class MusicBar extends View {
 
     public void start() {
         mIsStart = true;
+        invalidate();
     }
 
     public void stop() {
