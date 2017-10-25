@@ -291,7 +291,7 @@ public class CircleSeekBar extends View {
 
                     if (!mIsStart) {
                         mIsStart = true;
-                        mHandler.removeCallbacksAndMessages(null);
+                        mHandler.removeMessages(MSG_START);
                         mHandler.sendEmptyMessage(MSG_START);
                         if (mListener != null) {
                             mListener.onBegin();
@@ -381,11 +381,15 @@ public class CircleSeekBar extends View {
     }
 
     public void start() {
-        mIsStart = true;
-        mHandler.sendEmptyMessage(MSG_START);
-        if (mListener != null) {
-            mListener.onBegin();
+        if (!mIsStart) {
+            mIsStart = true;
+            mHandler.removeMessages(MSG_START);
+            mHandler.sendEmptyMessage(MSG_START);
+            if (mListener != null) {
+                mListener.onBegin();
+            }
         }
+
     }
 
     public void stop() {

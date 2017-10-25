@@ -41,7 +41,7 @@ public class MmLabelFragment extends BottomSheetDialogFragment
     private MmLabelAdapter mAdapter;
     private MmLabelPresenter mPresenter;
     private RecyclerView mRecyclerView;
-    private int mLastVisiableItem;
+    private int mLastVisibleItem;
     private GridLayoutManager mLayoutManager;
     private static final int mCount = 24;
     private static final String LABEL_URL = Contant.ES_URL + "mm/mmlabel/_search";
@@ -71,7 +71,7 @@ public class MmLabelFragment extends BottomSheetDialogFragment
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (mLastVisiableItem == mAdapter.getItemCount() - 1) {
+                    if (mLastVisibleItem == mAdapter.getItemCount() - 1) {
                         mPresenter.loadMoreData(mCount);
                     }
                 }
@@ -81,7 +81,7 @@ public class MmLabelFragment extends BottomSheetDialogFragment
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                mLastVisiableItem = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                mLastVisibleItem = mLayoutManager.findLastCompletelyVisibleItemPosition();
             }
         });
 

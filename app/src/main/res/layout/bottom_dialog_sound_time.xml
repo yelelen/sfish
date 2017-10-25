@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_gravity="top"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RadioGroup
+        android:id="@+id/rg_sound_time"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_close"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="不开启"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_current"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="播完当前声音"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_2"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="播完2集声音"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_3"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="播完3集声音"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_10"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="10分钟"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_20"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="20分钟"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_30"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="30分钟"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_60"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/font_16"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:text="60分钟"/>
+
+        <RadioButton
+            android:button="@null"
+            android:drawableEnd="@drawable/sel_bottom_dialog_sound_time"
+            android:id="@+id/rb_sound_time_90"
+            android:layout_height="@dimen/len_52"
+            android:layout_width="match_parent"
+            android:paddingStart="@dimen/len_16"
+            android:paddingEnd="@dimen/len_32"
+            android:textSize="@dimen/font_16"
+            android:text="90分钟"/>
+    </RadioGroup>
+
+    <View
+        android:background="@android:color/white"
+        android:id="@+id/sound_time_line"
+        android:layout_below="@id/rg_sound_time"
+        android:layout_height="@dimen/len_16"
+        android:layout_width="match_parent"/>
+
+</RelativeLayout>
+

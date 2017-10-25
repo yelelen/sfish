@@ -352,29 +352,31 @@ public class Utils {
 
         dy2 = c.y - center.y;
 
-        float result = (float)Math.sqrt(dx1 * dx1 + dy1 * dy1) * (float)Math.sqrt(dx2 * dx2 + dy2 * dy2);
+        float result = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1) * (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
 
         if (result == 0) return -1;
 
-        angle = (float)Math.acos((dx1 * dx2 + dy1 * dy2) / result);
+        angle = (float) Math.acos((dx1 * dx2 + dy1 * dy2) / result);
         angle = (float) Math.toDegrees(angle);
 
         return angle;
     }
 
     public static String getDurationText(int second) {
-        int m = second / 60;
         int s = second % 60;
+        int m = second / 60;
+        int h = m / 60;
+        m %= 60;
         String str = s < 10 ? ("0" + String.valueOf(s)) : String.valueOf(s);
         if (second < 0) {
             return "0:00";
         } else if (second >= 0 && second < 60) {
             return "0:" + str;
-        } else {
+        } else if (second >= 60 && second < 3600) {
             return String.valueOf(m) + ":" + str;
+        } else {
+            return String.valueOf(h) + ":" + String.valueOf(m) + ":" + str;
         }
-
-
     }
 }
 

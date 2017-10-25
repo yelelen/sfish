@@ -5,11 +5,23 @@
              android:layout_height="match_parent"
              android:background="@color/bg_color">
 
-    <TextView
-        android:id="@+id/label_select_text"
-        android:layout_width="wrap_content"
+    <!--<TextView-->
+        <!--android:id="@+id/label_select_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:text="select"/>-->
+    <RadioGroup
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="select"/>
+        android:padding="@dimen/len_16">
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@mipmap/logo"
+            android:text="不开启"
+            android:drawablePadding="@dimen/len_20"
+            android:button="@null"/>
+    </RadioGroup>
 
 </FrameLayout>

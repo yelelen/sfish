@@ -2,6 +2,7 @@ package com.yelelen.sfish.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,6 +23,8 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +51,7 @@ import com.yelelen.sfish.presenter.SoundZhuboPresenter;
 import com.yelelen.sfish.service.SoundService;
 import com.yelelen.sfish.utils.BlurUtil;
 import com.yelelen.sfish.utils.SnackbarUtil;
+import com.yelelen.sfish.utils.Utils;
 import com.yelelen.sfish.view.CircleSeekBar;
 import com.yelelen.sfish.view.RecyclerViewDecoration;
 
@@ -77,15 +82,29 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private static final int PLAYER = 1;
     private static final int ALBUM = 2;
     private static final int MSG_COVER_ROTATE = 10;
-    private static final int TYPE_CURRENT_ALBUM = 100;
-    private static final int TYPE_ZHUBO_ALBUM = 101;
-    private int mCurrentType = TYPE_CURRENT_ALBUM;
+    private static final int MSG_UPDATE_REST_TIME = 11;
+    private static final int TYPE_ALBUM_CURRENT = 100;
+    private static final int TYPE_ALBUM_ZHUBO = 101;
+    private int mCurrentAlbumType = TYPE_ALBUM_CURRENT;
 
-    private static final int ORDER_ORDER = 200;
-    private static final int ORDER_RANDOM = 201;
-    private static final int ORDER_REPEAT = 202;
-    private int mCurrentOrder = ORDER_ORDER;
+    private static final int TYPE_ORDER_ORDER = 200;
+    private static final int TYPE_ORDER_RANDOM = 201;
+    private static final int TYPE_ORDER_REPEAT = 202;
+    private int mCurrentOrderType = TYPE_ORDER_ORDER;
 
+    private static final int TYPE_TIME_CLOSE = 300;
+    private static final int TYPE_TIME_CURRENT = 301;
+    private static final int TYPE_TIME_2 = 302;
+    private static final int TYPE_TIME_3 = 303;
+    private static final int TYPE_TIME_MINUTE_10 = 304;
+    private static final int TYPE_TIME_MINUTE_20 = 305;
+    private static final int TYPE_TIME_MINUTE_30 = 306;
+    private static final int TYPE_TIME_MINUTE_60 = 307;
+    private static final int TYPE_TIME_MINUTE_90 = 308;
+    private int mCurrentTimeType = TYPE_TIME_CLOSE;
+    private int mLastTimeType = mCurrentTimeType;
+    private int mCurrentTimeCheckId = R.id.rb_sound_time_close;
+    private int mRestTime = 0;
 
     private CircleImageView mPlayCover;
     private CircleSeekBar mSeekBar;
@@ -105,6 +124,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     private ImageView mForward15;
     private ProgressBar mPlayerProgressBar;
     private ImageView mPlayerOverEnd;
+    private TextView mTimeText;
 
     private ImageView mAlbumCover;
     private TextView mAlbumTitle;
@@ -160,6 +180,24 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
                     if (mSeekBar.isStart())
                         mHandler.sendEmptyMessageDelayed(MSG_COVER_ROTATE, 1000);
                     break;
+                case MSG_UPDATE_REST_TIME:
+                    mTimeText.setText(Utils.getDurationText(--mRestTime));
+                    if (mRestTime > 0) {
+                        if (mTimeText.isShown()) {
+                            if (mCurrentTimeType >= TYPE_TIME_MINUTE_10)
+                                mHandler.sendEmptyMessageDelayed(MSG_UPDATE_REST_TIME, 1000);
+                            else {
+                                if (mSoundBinder.isPlaying())
+                                    mHandler.sendEmptyMessageDelayed(MSG_UPDATE_REST_TIME, 1000);
+                            }
+                        }
+                    } else {
+                        if (mCurrentTimeType != TYPE_TIME_CLOSE && mSoundBinder.isPlaying()) {
+                            mTimeText.setVisibility(View.GONE);
+                            mSoundBinder.pause();
+                        }
+                    }
+
                 default:
                     break;
             }
@@ -225,6 +263,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mForward15 = mPlayer.findViewById(R.id.sound_play_forward_15);
         mPlayerProgressBar = mPlayer.findViewById(R.id.sound_play_progressBar);
         mPlayerOverEnd = mPlayer.findViewById(R.id.sound_play_progress_bar_completition);
+        mTimeText = mPlayer.findViewById(R.id.sound_play_time_text);
 
 
         mAlbumCover = mAlbum.findViewById(R.id.sound_album_cover);
@@ -270,6 +309,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mBack15.setOnClickListener(this);
         mForward15.setOnClickListener(this);
         mOrder.setOnClickListener(this);
+        mTime.setOnClickListener(this);
     }
 
     public static void setMusicBarListener(UpdateMusicBarListener listener) {
@@ -307,7 +347,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             public void onPageSelected(int position) {
                 updateIndicator(position);
                 if (position == 0) {
-                    setCurrentType(TYPE_ZHUBO_ALBUM);
+                    setCurrentAlbumType(TYPE_ALBUM_ZHUBO);
                     loadZhuboAlbum(mZhuboAlbumCount);
                 }
             }
@@ -321,7 +361,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
 
         Glide.with(this).load(mAlbumCoverPath).into(mPlayCover);
 
-        setCurrentType(TYPE_CURRENT_ALBUM);
+        setCurrentAlbumType(TYPE_ALBUM_CURRENT);
         mItemPresenter.loadOneData(mAlbumOrder);
 
         mTrackAdapter = new SoundAlbumTrackAdapter(this, mAlbumRecycler);
@@ -359,7 +399,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
                 if (newState == RecyclerView.SCROLL_STATE_IDLE &&
                         mZhuboAlbumLastVisibleItem == mZhuboAlbumAdapter.getItemCount() - 1) {
                     mZhuboProgressBar.setVisibility(View.VISIBLE);
-                    setCurrentType(TYPE_ZHUBO_ALBUM);
+                    setCurrentAlbumType(TYPE_ALBUM_ZHUBO);
                     loadZhuboAlbum(mZhuboAlbumCount);
                 }
 
@@ -386,11 +426,12 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     }
 
     private void loadZhuboAlbum(int count) {
-        mItemPresenter.loadAlbumByZhuboId(count, mCurrentAlbum.getZhuboId());
+        if (mCurrentAlbum != null)
+            mItemPresenter.loadAlbumByZhuboId(count, mCurrentAlbum.getZhuboId());
     }
 
-    private void setCurrentType(int type) {
-        mCurrentType = type;
+    private void setCurrentAlbumType(int type) {
+        mCurrentAlbumType = type;
     }
 
     private void updateIndicator(int pos) {
@@ -406,14 +447,14 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             mIndicator3.setImageResource(R.drawable.shape_sound_play_vp_indicator_check);
     }
 
-    private void setCurrentOrder(int order) {
-        mCurrentOrder = order;
-        updateOrderImage(mCurrentOrder);
+    private void setCurrentOrderType(int order) {
+        mCurrentOrderType = order;
+        updateOrderImage(mCurrentOrderType);
     }
 
     private void updateOrderImage(int currentOrder) {
-        mOrder.setImageResource(currentOrder == ORDER_ORDER ? R.drawable.ic_sound_order :
-                (currentOrder == ORDER_REPEAT) ? R.drawable.ic_sound_repeat : R.drawable.ic_sound_random);
+        mOrder.setImageResource(currentOrder == TYPE_ORDER_ORDER ? R.drawable.ic_sound_order :
+                (currentOrder == TYPE_ORDER_REPEAT) ? R.drawable.ic_sound_repeat : R.drawable.ic_sound_random);
     }
 
     @Override
@@ -440,28 +481,44 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             case R.id.sound_play_order:
                 switchOrder();
                 break;
+            case R.id.sound_play_time:
+                showTimeDialog();
+                break;
             default:
                 break;
         }
     }
 
     private void switchOrder() {
-        int order = (++mCurrentOrder - ORDER_ORDER) % 3 + ORDER_ORDER;
-        setCurrentOrder(order);
+        int order = (++mCurrentOrderType - TYPE_ORDER_ORDER) % 3 + TYPE_ORDER_ORDER;
+        setCurrentOrderType(order);
+    }
+
+    private void setCurrentTimeType(int timeType) {
+        mLastTimeType = mCurrentTimeType;
+        mCurrentTimeType = timeType;
     }
 
     private void playForward15() {
         mSoundBinder.seekTo(mSoundBinder.getPlayedDuration() + 15);
+        if (TYPE_TIME_CURRENT <= mCurrentTimeType && mCurrentTimeType <= TYPE_TIME_3)
+            updateTimeText();
     }
 
     private void playBack15() {
-        mSoundBinder.seekTo(mSoundBinder.getPlayedDuration() - 15);
+        int play = mSoundBinder.getPlayedDuration();
+        if (play >= 15)
+            mSoundBinder.seekTo(mSoundBinder.getPlayedDuration() - 15);
+        else
+            mSoundBinder.seekTo(0);
+        if (TYPE_TIME_CURRENT <= mCurrentTimeType && mCurrentTimeType <= TYPE_TIME_3)
+            updateTimeText();
     }
 
     private void playNext() {
-        if (mCurrentOrder == ORDER_ORDER)
+        if (mCurrentOrderType == TYPE_ORDER_ORDER)
             playOrderNext();
-        else if (mCurrentOrder == ORDER_REPEAT) {
+        else if (mCurrentOrderType == TYPE_ORDER_REPEAT) {
             if (mIsInitPlay) {
                 initPlay();
             } else {
@@ -470,13 +527,15 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         } else {
             playRandom();
         }
+        if (TYPE_TIME_CURRENT <= mCurrentTimeType && mCurrentTimeType <= TYPE_TIME_3)
+            updateTimeText();
     }
 
 
     private void playPrevious() {
-        if (mCurrentOrder == ORDER_ORDER)
+        if (mCurrentOrderType == TYPE_ORDER_ORDER)
             playOrderPrevious();
-        else if (mCurrentOrder == ORDER_REPEAT) {
+        else if (mCurrentOrderType == TYPE_ORDER_REPEAT) {
             if (mIsInitPlay) {
                 initPlay();
             } else {
@@ -485,6 +544,8 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         } else {
             playRandom();
         }
+        if (TYPE_TIME_CURRENT <= mCurrentTimeType && mCurrentTimeType <= TYPE_TIME_3)
+            updateTimeText();
     }
 
 
@@ -505,7 +566,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         mCurrentTrack = mTrackModels.get(mCurrentTrackIndex);
         String path = App.mSoundTrackBasePath + String.valueOf(mCurrentTrack.getAlbumId()) +
                 File.separator + String.valueOf(mCurrentTrack.getOrder());
-        if (! new File(path).exists()) {
+        if (!new File(path).exists()) {
             path = mCurrentTrack.getPaths().split(",")[0];
             mPlayerProgressBar.setVisibility(View.VISIBLE);
             mPlayerOverEnd.setVisibility(View.GONE);
@@ -561,7 +622,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
             @Override
             public void run() {
                 if (t != null && t.size() > 0) {
-                    if (mCurrentType == TYPE_CURRENT_ALBUM) {
+                    if (mCurrentAlbumType == TYPE_ALBUM_CURRENT) {
                         mCurrentAlbum = t.get(0);
                         updateAlbumUi(mCurrentAlbum);
                         String[] ids = mCurrentAlbum.getSounds().split(",");
@@ -570,7 +631,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
                         }
                         loadTrack(mTrackCount);
                         loadZhubo(mCurrentAlbum.getZhuboId());
-                    } else if (mCurrentType == TYPE_ZHUBO_ALBUM) {
+                    } else if (mCurrentAlbumType == TYPE_ALBUM_ZHUBO) {
 
                         mZhuboProgressBar.setVisibility(View.GONE);
                         for (SoundItemModel soundItemModel : t) {
@@ -580,7 +641,7 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
                     }
 
                 } else {
-                    if (mCurrentType == TYPE_ZHUBO_ALBUM) {
+                    if (mCurrentAlbumType == TYPE_ALBUM_ZHUBO) {
                         mZhuboProgressBar.setVisibility(View.GONE);
                     }
                 }
@@ -722,6 +783,9 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         disableImageView(mForward15, false, R.drawable.ic_sound_forward_15_gray,
                 R.drawable.sel_sound_forward_15);
         updateMusicBar(false);
+
+        if (TYPE_TIME_CURRENT <= mCurrentTimeType && mCurrentTimeType <= TYPE_TIME_3)
+            updateRestTime();
     }
 
     @Override
@@ -735,6 +799,8 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     public void onSeekDone() {
         float degree = mSoundBinder.getPlayedDuration() * 1.0f / mSoundBinder.getDuration() * mSeekBar.getTotalDegree();
         mSeekBar.setProgressSweepAngle((int) degree);
+        if (TYPE_TIME_CURRENT <= mCurrentTimeType && mCurrentTimeType <= TYPE_TIME_3)
+            updateTimeText();
     }
 
     @Override
@@ -746,9 +812,9 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
     public void onCompletion() {
         mSeekBar.stop();
         mPlay.setImageResource(R.drawable.ic_sound_play);
-        if (mCurrentOrder == ORDER_ORDER) {
+        if (mCurrentOrderType == TYPE_ORDER_ORDER) {
             playOrderNext();
-        } else if (mCurrentOrder == ORDER_REPEAT) {
+        } else if (mCurrentOrderType == TYPE_ORDER_REPEAT) {
             if (mIsInitPlay) {
                 initPlay();
             } else {
@@ -789,6 +855,126 @@ public class SoundPlayActivity extends BaseActivity implements LoadContent<Sound
         } else {
             initPlay();
         }
+    }
+
+    private void showTimeDialog() {
+        final BottomSheetDialog dialog = new BottomSheetDialog(this);
+        RelativeLayout root = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.bottom_dialog_sound_time,
+                null, false);
+        RadioGroup group = root.findViewById(R.id.rg_sound_time);
+        if (mCurrentOrderType == TYPE_ORDER_RANDOM) {
+            group.removeViews(2, 2);
+        }
+        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                int type;
+                if (checkedId == R.id.rb_sound_time_close)
+                    type = TYPE_TIME_CLOSE;
+                else if (checkedId == R.id.rb_sound_time_current)
+                    type = TYPE_TIME_CURRENT;
+                else if (checkedId == R.id.rb_sound_time_2)
+                    type = TYPE_TIME_2;
+                else if (checkedId == R.id.rb_sound_time_3)
+                    type = TYPE_TIME_3;
+                else if (checkedId == R.id.rb_sound_time_10)
+                    type = TYPE_TIME_MINUTE_10;
+                else if (checkedId == R.id.rb_sound_time_20)
+                    type = TYPE_TIME_MINUTE_20;
+                else if (checkedId == R.id.rb_sound_time_30)
+                    type = TYPE_TIME_MINUTE_30;
+                else if (checkedId == R.id.rb_sound_time_60)
+                    type = TYPE_TIME_MINUTE_60;
+                else
+                    type = TYPE_TIME_MINUTE_90;
+                mCurrentTimeCheckId = checkedId;
+                setCurrentTimeType(type);
+                dialog.dismiss();
+            }
+        });
+        group.check(mCurrentTimeCheckId);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mCurrentTimeType != mLastTimeType) {
+                    updateTimeText();
+                }
+            }
+        });
+        dialog.setContentView(root);
+        dialog.show();
+    }
+
+    private void getRestTime() {
+        switch (mCurrentTimeType) {
+            case TYPE_TIME_CLOSE:
+                mRestTime = 0;
+                break;
+            case TYPE_TIME_CURRENT:
+                mRestTime = getRestTimeByTracks(0);
+                break;
+            case TYPE_TIME_2:
+                mRestTime = getRestTimeByTracks(1);
+                break;
+            case TYPE_TIME_3:
+                mRestTime = getRestTimeByTracks(2);
+                break;
+            case TYPE_TIME_MINUTE_10:
+                mRestTime = 600;
+                break;
+            case TYPE_TIME_MINUTE_20:
+                mRestTime = 1200;
+                break;
+            case TYPE_TIME_MINUTE_30:
+                mRestTime = 1800;
+                break;
+            case TYPE_TIME_MINUTE_60:
+                mRestTime = 3600;
+                break;
+            case TYPE_TIME_MINUTE_90:
+                mRestTime = 5400;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private int getRestTimeByTracks(int restCount) {
+        int played = mIsInitPlay ? 0 : mSoundBinder.getPlayedDuration();
+        int currentRestTime = mCurrentTrack.getDuration() - played;
+        if (restCount == 0)
+            return currentRestTime;
+        else {
+            if (mCurrentOrderType == TYPE_ORDER_REPEAT)
+                return currentRestTime + mCurrentTrack.getDuration() * restCount;
+            else {
+                int time = 0;
+                for (int i = 0; i < restCount; i++) {
+                    if (mCurrentTrackIndex + i + 1 < mTrackModels.size()) {
+                        time += mTrackModels.get(mCurrentTrackIndex + i + 1).getDuration();
+                    }
+                }
+                return time + currentRestTime;
+            }
+        }
+    }
+
+    private void updateRestTime() {
+        if (mCurrentTimeType != TYPE_TIME_CLOSE) {
+            if (!mTimeText.isShown())
+                mTimeText.setVisibility(View.VISIBLE);
+            mHandler.removeMessages(MSG_UPDATE_REST_TIME);
+            mHandler.sendEmptyMessage(MSG_UPDATE_REST_TIME);
+        } else {
+            if (mTimeText.isShown())
+                mTimeText.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void updateTimeText() {
+        getRestTime();
+        updateRestTime();
     }
 
 
